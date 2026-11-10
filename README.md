@@ -5,6 +5,8 @@ Open `index.html` in any browser — no build step, no server, no dependencies.
 
 **269 commands · 14 chapters · 3 tracks · 48 tools**
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference)
+
 ---
 
 ## Tracks
@@ -37,6 +39,25 @@ sources/
   Tools of the Trade.txt                raw source for the AD Toolkit track
 README.md
 ```
+
+## Hosting on Render
+
+The repo ships a `render.yaml` Blueprint, so Render needs no configuration.
+
+**One-click:** open **<https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference>**,
+sign in with GitHub, approve the repo, and click **Apply**. The site is live at
+`https://<service-name>.onrender.com` in about a minute.
+
+**Or from the dashboard:** *New → Static Site → connect `winref-command-reference` →*
+
+| Setting | Value |
+| --- | --- |
+| Branch | `main` |
+| Build Command | *(leave empty)* |
+| Publish Directory | `.` |
+
+Afterwards, every push to `main` redeploys automatically. Static sites are free on Render, served
+from a global CDN with HTTPS, and support a custom domain under *Settings → Custom Domains*.
 
 ## Editing
 

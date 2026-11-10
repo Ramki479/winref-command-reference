@@ -1,0 +1,26 @@
+# Render Blueprint — static site
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Deploy: https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference
+services:
+  - type: web
+    name: winref
+    runtime: static
+    buildCommand: echo "static site — nothing to build"
+    staticPublishPath: .
+    autoDeployTrigger: commit
+    headers:
+      # The whole site is one HTML file: always revalidate so edits show up
+      # immediately after a deploy, on the CDN and in the browser.
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN

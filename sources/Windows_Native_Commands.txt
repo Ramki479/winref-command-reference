@@ -1,0 +1,176 @@
+WINDOWS NATIVE & ACTIVE DIRECTORY COMMAND REFERENCE
+Notepad edition | CMD and PowerShell | Authorized security testing
+
+PART A — COMMAND PROMPT (CMD)
+=============================
+
+1. SYSTEM & IDENTITY
+--------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+whoami                                       | Display the current user.
+whoami /all                                  | Show user, groups, SIDs, and privileges.
+hostname                                     | Display the computer name.
+ver                                          | Display the Windows version.
+systeminfo                                   | Show detailed OS and system information.
+query user                                   | List logged-on user sessions.
+set                                          | Display environment variables.
+echo %LOGONSERVER%                           | Show the logon server for the current session.
+
+
+2. USERS & GROUPS
+-----------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+net user                                     | List local user accounts.
+net user <username>                          | Display details for a specified local user.
+net user /domain                             | List domain user accounts (where permitted).
+net group "Domain Admins" /domain            | List members of the Domain Admins group.
+net group /domain                            | List domain groups.
+net localgroup                               | List local groups.
+net localgroup Administrators                | List members of the local Administrators group.
+
+
+3. NETWORK & DOMAIN DISCOVERY
+-----------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+ipconfig /all                                | Show IP configuration, DNS, gateway, and adapters.
+arp -a                                       | Display the ARP cache.
+route print                                  | Display the routing table.
+netstat -ano                                 | Show network connections/listeners with PIDs.
+nslookup <name>                              | Resolve a hostname or domain.
+nslookup -type=SRV _ldap._tcp.dc._msdcs.<domain> | Query LDAP domain-controller SRV records.
+nltest /dsgetdc:<domain>                     | Locate a domain controller.
+nltest /domain_trusts                        | Enumerate domain trusts.
+ping <host>                                  | Test basic host reachability.
+tracert <host>                               | Trace the network path to a host.
+net view \\<host>                            | List visible shares on a remote host.
+net share                                    | List shares on the local computer.
+
+
+4. SERVICES, TASKS & FILE PERMISSIONS
+-------------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+sc.exe query                                 | List services and their states.
+sc.exe qc <service>                          | Display a service's configuration.
+schtasks /query /fo LIST /v                  | List scheduled tasks with verbose details.
+tasklist /svc                                | List processes and associated services.
+icacls <path>                                | Display file or directory permissions.
+dir /a <path>                                | List all files, including hidden/system items.
+findstr /spin /c:<term> <path>\*             | Search files recursively for a text pattern.
+reg query <key> /s                            | Query a registry key and its subkeys.
+gpresult /r                                  | Display applied Group Policy information.
+
+
+5. KERBEROS, CREDENTIAL REFERENCES & SECURITY
+----------------------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+setspn -Q */*                                | Query registered Service Principal Names.
+klist                                        | Display Kerberos tickets in the current logon session.
+cmdkey /list                                 | List saved credential target references.
+vaultcmd /list                               | List Windows Credential Manager vaults.
+auditpol /get /category:*                    | Display audit policy settings.
+wevtutil el                                  | List available Windows event logs.
+
+
+PART B — POWERSHELL
+===================
+
+6. SYSTEM, PROCESSES & SERVICES
+-------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+Get-CimInstance Win32_OperatingSystem        | Retrieve operating-system details.
+Get-CimInstance Win32_ComputerSystem          | Retrieve computer and domain/workgroup details.
+Get-Process                                  | List running processes.
+Get-Service                                  | List services and their states.
+Get-CimInstance Win32_Service                 | Show service configuration and process details.
+Get-ScheduledTask                            | List scheduled tasks.
+Get-HotFix                                   | List installed Windows updates/hotfixes.
+Get-ChildItem Env:                            | Display environment variables.
+Get-PSDrive -PSProvider FileSystem            | List file-system drives.
+
+
+7. NETWORK & REMOTE MANAGEMENT
+-------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+Test-NetConnection <host> -Port <port>        | Test connectivity to a host and TCP port.
+Get-NetTCPConnection                         | Display TCP connections and listening endpoints.
+Test-WSMan <host>                            | Test whether WinRM responds on a remote host.
+Get-SmbConnection                            | Display active SMB client connections.
+
+
+8. ACTIVE DIRECTORY (RSAT / MODULE REQUIRED)
+--------------------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+Get-ADDomain                                 | Retrieve current domain information.
+Get-ADForest                                 | Retrieve forest information.
+Get-ADUser -Filter * -Properties Description,ServicePrincipalName | List domain users with selected properties.
+Get-ADGroup -Filter *                        | List domain groups.
+Get-ADGroupMember "Domain Admins" -Recursive | List direct and nested members of Domain Admins.
+Get-ADComputer -Filter * -Properties OperatingSystem | List domain computers and OS information.
+Get-GPO -All                                 | List Group Policy Objects (GroupPolicy module required).
+Get-Acl <AD-provider-path>                   | Display permissions on an AD provider path.
+
+
+9. KERBEROS, CREDENTIAL REFERENCES & SECURITY
+----------------------------------------------
+Command                                      | Purpose / use
+---------------------------------------------|-----------------------------------------------
+setspn -Q */*                                | Query registered Service Principal Names.
+klist                                        | Display Kerberos tickets in the current logon session.
+cmdkey /list                                 | List saved credential target references.
+vaultcmd /list                               | List Windows Credential Manager vaults.
+Get-FileHash <file> -Algorithm SHA256         | Calculate a SHA-256 file hash.
+Get-MpComputerStatus                         | Display Microsoft Defender status.
+Get-NetFirewallProfile                       | Display Windows Firewall profile settings.
+auditpol /get /category:*                    | Display audit policy settings.
+wevtutil el                                  | List available Windows event logs.
+
+
+QUICK ENUMERATION WORKFLOWS
+===========================
+
+CMD — BASIC HOST AND DOMAIN ENUMERATION
+---------------------------------------
+whoami /all
+hostname
+systeminfo
+ipconfig /all
+nltest /dsgetdc:<domain>
+nltest /domain_trusts
+net user /domain
+net group "Domain Admins" /domain
+netstat -ano
+sc.exe query
+schtasks /query /fo LIST /v
+gpresult /r
+
+POWERSHELL — BASIC HOST ENUMERATION
+-----------------------------------
+Get-CimInstance Win32_OperatingSystem
+Get-CimInstance Win32_ComputerSystem
+Get-Process
+Get-Service
+Get-CimInstance Win32_Service
+Get-ScheduledTask
+Get-HotFix
+Get-NetTCPConnection
+Get-NetFirewallProfile
+Get-MpComputerStatus
+
+NOTES
+=====
+- Use these commands only on systems you own or are explicitly authorized to assess.
+- Output can vary by Windows version, domain configuration, policy, and user privileges.
+- Active Directory Get-AD* commands require the Active Directory PowerShell module (commonly installed through RSAT).
+- Get-GPO requires the GroupPolicy PowerShell module.
+- Some commands or returned details require elevated permissions or specific Windows features.
+- Enumeration output is evidence for investigation; it does not by itself prove a vulnerability.
+- Do not collect, expose, or reuse credentials, tickets, or tokens outside the approved scope.
+- Replace placeholders such as <username>, <host>, <domain>, <service>, <path>, and <port> with appropriate values.

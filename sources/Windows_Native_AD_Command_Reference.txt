@@ -1,0 +1,165 @@
+WINDOWS NATIVE & ACTIVE DIRECTORY ENUMERATION
+OSCP / HTB / AUTHORIZED INTERNAL ASSESSMENTS
+
+LAYOUT
+------
+COMMAND                                         FUNCTION                                              SCENARIO
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+PART A - COMMAND PROMPT (CMD)
+=============================
+
+SYSTEM & IDENTITY
+-----------------
+whoami                                          Prints the current security identity.                 # Confirm which account and domain context the foothold is using.
+whoami /all                                     Shows SID, groups, privileges, and token details.     # Check the current token for useful group membership and enabled
+                                                                                                      privileges.
+hostname                                        Prints the computer name.                             # Record the target hostname before correlating it with domain and
+                                                                                                      network data.
+ver                                             Prints the Windows version.                           # Quickly identify the Windows release before selecting compatible
+                                                                                                      checks.
+systeminfo                                      Shows OS build, hotfixes, hardware, and boot details  # Fingerprint the host and record its patch and operating-system
+                                                                                                      context.
+query user                                      Lists interactive sessions visible on the local host  # Check whether other users have active or disconnected sessions.
+set                                             Lists environment variables.                          # Inspect USERDOMAIN, USERDNSDOMAIN, LOGONSERVER, PATH, and
+                                                                                                      application context.
+echo %LOGONSERVER%                              Shows the logon server used for the current session.  # Identify the domain controller that authenticated the session.
+
+USERS & GROUPS
+--------------
+net user                                        Lists local user accounts.                            # Enumerate local accounts during initial host discovery.
+net user <username>                             Shows details for a specified local account.          # Review account status and metadata when an account looks
+                                                                                                      relevant.
+net user /domain                                Lists domain user accounts.                           # Enumerate domain identities from a domain-joined foothold.
+net group "Domain Admins" /domain               Lists members of the Domain Admins group.             # Identify highly privileged domain membership using a read-only
+                                                                                                      query.
+net group /domain                               Lists domain groups.                                  # Build a first-pass view of groups exposed to the current domain
+                                                                                                      user.
+net localgroup                                  Lists local groups.                                   # Identify local groups that may control access to the host.
+net localgroup Administrators                   Lists local Administrators group members.             # Check whether local or domain accounts have administrative
+                                                                                                      access on this machine.
+
+NETWORK & DOMAIN DISCOVERY
+--------------------------
+ipconfig /all                                   Shows IP, DNS, gateway, suffix, and adapter configur  # Map the host's network placement and identify DNS/domain
+                                                                                                      settings.
+arp -a                                          Displays the local ARP neighbor cache.                # Review recently observed local-subnet hosts as leads for further
+                                                                                                      validation.
+route print                                     Displays the IPv4/IPv6 routing tables.                # Identify connected subnets, gateways, and routes beyond the
+                                                                                                      local segment.
+netstat -ano                                    Lists network connections/listeners with process IDs  # Find exposed listening services and correlate connections with
+                                                                                                      processes.
+nslookup <name>                                 Queries configured DNS servers for a name.            # Validate hostnames and domain DNS resolution from the foothold.
+nslookup -type=SRV _ldap._tcp.dc._msdcs.<domai  Queries the AD LDAP domain-controller SRV records.    # Discover domain controllers through Active Directory DNS
+                                                                                                      records.
+nltest /dsgetdc:<domain>                        Discovers a domain controller for the specified doma  # Confirm the DC and domain context before deeper AD enumeration.
+nltest /domain_trusts                           Displays domain trust information visible to the hos  # Identify trusted domains that may matter to the authorized
+                                                                                                      assessment.
+ping <host>                                     Tests basic ICMP reachability.                        # Quickly check whether a discovered host responds to ICMP; lack
+                                                                                                      of response is inconclusive.
+tracert <host>                                  Displays the network path toward a destination.       # Investigate routing boundaries when a target is reachable only
+                                                                                                      through intermediate networks.
+net view \\<host>                               Lists shares exposed by a remote Windows host when p  # Identify accessible SMB share names for authorized share review.
+net share                                       Lists shares hosted by the local computer.            # Understand which local folders are being shared by the foothold.
+
+SERVICES, TASKS & FILE PERMISSIONS
+----------------------------------
+sc.exe query                                    Lists service states.                                 # Spot relevant running services before inspecting their
+                                                                                                      configuration.
+sc.exe qc <service>                             Shows a service's binary path, start type, and servi  # Check whether a service runs with a powerful identity or uses a
+                                                                                                      questionable executable path.
+schtasks /query /fo LIST /v                     Lists scheduled tasks with verbose details.           # Review task actions, run-as identities, and script paths for
+                                                                                                      misconfiguration clues.
+tasklist /svc                                   Maps running processes to hosted services.            # Correlate a process ID with the service names it hosts.
+icacls <path>                                   Displays file and directory access-control entries.   # Check whether a service binary, script, or parent directory has
+                                                                                                      unexpectedly broad write access.
+dir /a <path>                                   Lists files, including hidden/system entries.         # Inspect relevant application, user, backup, and configuration
+                                                                                                      directories.
+findstr /spin /c:<term> <path>\*                Searches text files recursively for a string.         # Search authorized readable configuration and script locations
+                                                                                                      for connection-string or secret references.
+reg query <key> /s                              Reads a registry key and its subkeys.                 # Inspect relevant Windows/application configuration and policy
+                                                                                                      values.
+gpresult /r                                     Summarizes applied Group Policy for the user and com  # Understand which policies apply to the current foothold and
+                                                                                                      user.
+
+PART B - POWERSHELL & WINDOWS MANAGEMENT
+========================================
+
+SYSTEM, PROCESSES & SERVICES
+----------------------------
+Get-CimInstance Win32_OperatingSystem           Returns OS caption, version, build, architecture, an  # Collect structured OS information when systeminfo output is too
+                                                                                                      broad.
+Get-CimInstance Win32_ComputerSystem            Returns computer name, domain membership, model, and  # Confirm whether the machine is domain joined and record its
+                                                                                                      domain.
+Get-Process                                     Lists running processes.                              # Identify applications and processes that may explain open ports
+                                                                                                      or installed services.
+Get-Service                                     Lists service names and states.                       # Triage service status before inspecting specific service
+                                                                                                      configurations.
+Get-CimInstance Win32_Service                   Returns service account, state, startup mode, and ex  # Find services running as privileged accounts and identify paths
+                                                                                                      for permission review.
+Get-ScheduledTask                               Lists scheduled tasks and their metadata.             # Review task names, actions, and principals when the
+                                                                                                      ScheduledTasks module is available.
+Get-HotFix                                      Lists installed hotfixes.                             # Collect patch inventory as supporting evidence during version
+                                                                                                      and patch assessment.
+Get-ChildItem Env:                              Lists process environment variables.                  # Inspect domain, user, path, and application environment context.
+Get-PSDrive -PSProvider FileSystem              Lists file-system drives visible to PowerShell.       # Identify mounted drives and accessible volumes.
+
+NETWORK & REMOTE MANAGEMENT
+---------------------------
+Test-NetConnection <host> -Port <port>          Tests TCP connectivity to a host and port.            # Validate whether a discovered service port is reachable from
+                                                                                                      this foothold.
+Get-NetTCPConnection                            Lists TCP endpoints and connection state.             # Review local listeners and established connections using
+                                                                                                      structured output.
+Test-WSMan <host>                               Tests whether a remote host responds to WS-Managemen  # Check whether WinRM is available before considering authorized
+                                                                                                      remote administration.
+Get-SmbConnection                               Shows SMB client connections.                         # Review active SMB sessions and the servers/shares currently
+                                                                                                      connected.
+
+ACTIVE DIRECTORY - RSAT REQUIRED
+--------------------------------
+Get-ADDomain                                    Returns domain metadata.                              # Record domain identity, domain controllers, and domain-level
+                                                                                                      configuration.
+Get-ADForest                                    Returns forest metadata and trust context.            # Understand forest-level structure when the AD module is
+                                                                                                      installed.
+Get-ADUser -Filter * -Properties Description,S  Queries domain users and selected attributes.         # Review user descriptions and SPNs for accounts requiring follow-
+                                                                                                      up.
+Get-ADGroup -Filter *                           Lists domain groups.                                  # Build a structured inventory of domain groups.
+Get-ADGroupMember "Domain Admins" -Recursive    Lists direct and nested members of a group.           # Resolve nested membership when assessing privileged group
+                                                                                                      exposure.
+Get-ADComputer -Filter * -Properties Operating  Lists computer accounts and operating systems.        # Identify servers, workstations, and older operating-system
+                                                                                                      records.
+Get-GPO -All                                    Lists Group Policy Objects (GroupPolicy module).      # Inventory GPOs for policy review; use gpresult to see policies
+                                                                                                      applied to this host.
+Get-Acl <AD-provider-path>                      Reads the security descriptor on an AD object path.   # Investigate a specific object ACL when a permission-based lead
+                                                                                                      has been identified.
+
+KERBEROS, CREDENTIAL REFERENCES & SECURITY
+------------------------------------------
+setspn -Q */*                                   Queries registered service principal names.           # Identify SPN-bearing service accounts for authorized Kerberos
+                                                                                                      exposure review.
+klist                                           Displays Kerberos tickets in the current logon sessi  # Understand which Kerberos tickets are cached for the current
+                                                                                                      identity.
+cmdkey /list                                    Lists saved credential target references.             # Check whether the current user has stored credential entries
+                                                                                                      worth documenting.
+vaultcmd /list                                  Lists Windows Vaults.                                 # Identify whether Windows Vault metadata exists; availability
+                                                                                                      varies by Windows version.
+Get-FileHash <file> -Algorithm SHA256           Calculates a SHA-256 file hash.                       # Verify file integrity after an approved transfer or collection.
+Get-MpComputerStatus                            Reports Microsoft Defender status.                    # Record endpoint protection state without changing security
+                                                                                                      settings.
+Get-NetFirewallProfile                          Shows Windows Firewall profile configuration.         # Understand firewall state and profile settings relevant to
+                                                                                                      connectivity.
+auditpol /get /category:*                       Displays audit policy settings.                       # Review which security events are configured for auditing; some
+                                                                                                      details require elevation.
+wevtutil el                                     Lists available Windows event logs.                   # Identify relevant logs for authorized defensive or assessment
+                                                                                                      review.
+
+IMPORTANT NOTES
+---------------
+- Examples are intended for systems you own or are explicitly authorized to assess.
+- Standard Windows commands are not guaranteed to return every detail; visibility depends on OS version, policy, and permissions.
+- Get-AD* commands require the Active Directory PowerShell module (RSAT / AD DS tools). Get-GPO requires the GroupPolicy module.
+- Some commands require Administrator privileges or feature-specific modules. A command being available does not mean the current account can read every object.
+- Enumeration results are leads, not proof of a vulnerability. Validate permissions and configuration before drawing conclusions.
+- Do not collect, expose, or reuse credentials or tokens outside the approved scope.
+
+REFERENCE: Reorganized from the supplied Windows Native & Active Directory Enumeration Handbook.

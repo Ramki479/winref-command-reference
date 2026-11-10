@@ -5,6 +5,8 @@ Open `index.html` in any browser — no build step, no server, no dependencies.
 
 **269 commands · 14 chapters · 3 tracks · 48 tools**
 
+**Live:** <https://winref-command-reference.onrender.com>
+
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference)
 
 ---
@@ -46,7 +48,7 @@ The repo ships a `render.yaml` Blueprint, so Render needs no configuration.
 
 **One-click:** open **<https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference>**,
 sign in with GitHub, approve the repo, and click **Apply**. The site is live at
-`https://<service-name>.onrender.com` in about a minute.
+`https://winref-command-reference.onrender.com` in about a minute.
 
 **Or from the dashboard:** *New → Static Site → connect `winref-command-reference` →*
 

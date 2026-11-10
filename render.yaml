@@ -4,7 +4,7 @@
 # Deploy: https://render.com/deploy?repo=https://github.com/Ramki479/winref-command-reference
 services:
   - type: web
-    name: winref
+    name: winref-command-reference
     runtime: static
     buildCommand: echo "static site — nothing to build"
     staticPublishPath: .
